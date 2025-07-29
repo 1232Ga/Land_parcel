@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="yellow">#DBFF00</color>
+    <color name="red_color">#FF4A08</color>
+    <color name="primary_color">#0ABFAB</color>
+    <color name="primary_color_line">#00B3FF</color>
+    <color name="green">#00FF00</color>
+    <color name="text_color2">#5E5E5E</color>
+    <color name="text_color">#454545</color>
+    <color name="view_line">#ECEBEB</color>
+    <color name="layer_text_color">#737373</color>
+    <color name="sub_heading">#5D5D5D</color>
+    <color name="primary">#2BBBA8</color>
+    <color name="light_gray">#F6F6F6</color>
+    <color name="gray">#CFCFCF</color>
+    <color name="grey_curve">#F5F6FA</color>
+    <color name="not_clickable">#E3E3E3</color>
+    <color name="icon_color">#b1b1b1</color>
+    <color name="red">#F01313</color>
+    <color name="camera_bg">#F1F1F1</color>
+    <color name="no_data">#787878</color>
+    <color name="sync_color">#C3C3C3</color>
+    <color name="unsurvey_color">#7BE0FF</color>
+    <color name="unsurvey_color_new">#00FFFFFF</color>
+    <color name="unsurvey_color_new_trans">#91000000</color>
+    <color name="survey_color">#FFD08C</color>
+    <color name="synced_color">#1EBE38</color>
+    <color name="layout_bg">#E8E8E8</color>
+    <color name="search_bg">#F8F9FE</color>
+    <color name="text_color_light">#D3D3D3</color>
+    <color name="trans_black">#66000000</color>
+
+</resources>

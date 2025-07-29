@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:gravity="center|left"
+                android:layout_height="match_parent"
+                android:layout_weight=".22">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40dp"
+                    android:src="@drawable/ic_logo_land_survey_digitization_green___black" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:gravity="center|left"
+                android:layout_height="match_parent"
+                android:layout_weight=".38">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40dp"
+                    android:layout_marginRight="@dimen/_10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/_5dp"
+                android:layout_weight=".4"
+                android:gravity="center|right">
+
+                <ImageView
+                    android:id="@+id/sync_view"
+                    android:layout_width="@dimen/_80dp"
+                    android:layout_height="@dimen/_45dp"
+                    android:src="@drawable/ic_sync" />
+
+                <ImageView
+                    android:id="@+id/profile_view"
+                    android:layout_width="@dimen/_30dp"
+                    android:layout_height="@dimen/_30dp"
+                    android:layout_marginLeft="@dimen/_10dp"
+                    android:layout_marginRight="@dimen/_5dp"
+                    android:src="@drawable/baseline_supervised_user_circle_24" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/sync_color"
+    android:elevation="@dimen/_18sp"
+    android:layout_height="match_parent"
+    tools:context=".View.Fragment.SurveyorHistoryFragment">
+
+  <LinearLayout
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/_45dp"
+      android:background="@color/white"
+      android:elevation="@dimen/_10dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/back_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingRight="@dimen/_12dp">
+
+      <ImageView
+          android:id="@+id/back_arrow_img"
+
+          android:layout_width="@dimen/_20dp"
+          android:layout_height="@dimen/_20dp"
+          android:layout_marginStart="@dimen/_10dp"
+          android:src="@drawable/ic_arrow_back" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/surveyer_history"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/_16sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:background="@color/white"
+      android:orientation="vertical"
+      android:layout_marginTop="@dimen/_10dp"
+      android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_25dp"
+        android:layout_marginLeft="@dimen/_20dp"
+        android:layout_marginRight="@dimen/_20dp"
+        android:background="@drawable/search_back_white_rect"
+        android:paddingLeft="@dimen/_16dp"
+        android:gravity="center|left"
+        android:layout_height="@dimen/_50dp">
+      <EditText
+          android:id="@+id/search_bar"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/_45dp"
+          android:hint="Search plot No."
+          android:cursorVisible="true"
+          android:filterTouchesWhenObscured="true"
+          android:fontFamily="@font/poppins_medium"
+          android:background="@null"
+          android:drawableStart="@drawable/baseline_search_24"
+          android:drawablePadding="@dimen/_10dp"
+          android:textSize="@dimen/_16sp"
+          android:singleLine="true"
+          android:inputType="text"
+          android:ellipsize="end"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/_20dp"
+        android:layout_marginRight="@dimen/_20dp"
+        android:layout_marginTop="@dimen/_25dp"
+        android:weightSum="1"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+      <LinearLayout
+          android:layout_width="0dp"
+          android:layout_weight=".5"
+          android:gravity="center|left"
+          android:layout_height="match_parent">
+          <TextView
+              android:id="@+id/survey_count"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent"
+              android:text="Total Survey (0)"
+              android:gravity="left|center"
+              android:textColor="@color/sub_heading"
+              android:textSize="@dimen/_16sp"
+              android:fontFamily="@font/poppins_medium"/>
+      </LinearLayout>
+      <LinearLayout
+          android:layout_width="0dp"
+          android:layout_weight=".5"
+          android:gravity="right|center"
+          android:layout_height="match_parent">
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:orientation="horizontal"
+              android:weightSum="1"
+              android:layout_height="@dimen/_35dp">
+
+              <Spinner
+                  android:layout_width="@dimen/_170dp"
+                  android:id="@+id/village_spin"
+                  android:layout_height="@dimen/_35dp"
+                  android:paddingStart="@dimen/_10dp"
+                  android:background="@drawable/spinner_bg"
+                  />
+
+
+          </LinearLayout>
+          <LinearLayout
+              android:visibility="gone"
+              android:layout_width="@dimen/_105dp"
+              android:orientation="horizontal"
+              android:weightSum="1"
+              android:background="@drawable/back_white_rect"
+              android:layout_height="@dimen/_35dp">
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".75"
+                 android:gravity="center"
+                 android:layout_height="match_parent">
+                 <ImageView
+                     android:layout_width="@dimen/_60dp"
+                     android:layout_height="@dimen/_20dp"
+                     android:src="@drawable/title_filter"/>
+             </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight=".25"
+                android:gravity="center"
+                android:paddingRight="@dimen/_10dp"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="@dimen/_12dp"
+                    android:layout_height="@dimen/_12dp"
+                    android:src="@drawable/ic_arrow_down"/>
+            </LinearLayout>
+          </LinearLayout>
+      </LinearLayout>
+    </LinearLayout>
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/survey_history_recycler"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:listitem="@layout/surveyor_history_card"/>
+
+  </LinearLayout>
+
+
+
+
+
+
+
+</LinearLayout>

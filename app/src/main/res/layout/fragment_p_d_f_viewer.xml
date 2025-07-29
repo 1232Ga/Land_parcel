@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".View.Fragment.PDFViewerFragment">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_height="match_parent">
+    <!-- RecyclerView to Show Selected Images -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Buttons -->
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Capture Image from Camera"/>
+    <Button
+        android:id="@+id/btnGallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Image from Gallery"/>
+    <Button
+        android:id="@+id/btnConvertToPdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Convert to PDF"/>
+    <Button
+        android:id="@+id/btnSyncPdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sync PDf"/>
+    <Button
+        android:id="@+id/btnViewPdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View PDF"/>
+    <Button
+        android:id="@+id/btnViewPdffromS3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View PDF from S3 Bucket"/>
+</LinearLayout>
+</FrameLayout>

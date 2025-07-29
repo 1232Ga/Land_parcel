@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+    <fragment
+        android:id="@+id/dashboard_Fragment"
+        android:name="com.example.land_parcel.View.Fragment.DashboardFragment"
+        android:label="fragment_dashboard"
+        android:launchMode="singleTop"
+        tools:layout="@layout/fragment_dashboard">
+
+        <!-- Actions -->
+        <action
+            android:id="@+id/action_dashboard_Fragment_to_profile_Fragment"
+            app:destination="@id/profile_Fragment"
+            />
+
+
+        <action
+            android:id="@+id/action_dashboard_Fragment_to_updateFormFragment"
+            app:destination="@id/updateFormFragment" />
+
+        <action
+            android:id="@+id/action_dashboard_Fragment_to_syncFragment"
+            app:destination="@id/syncFragment" />
+
+        <!-- Arguments -->
+        <argument
+            android:name="land_type"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="village_name"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="district_name"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="block"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="tehsil"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="unique_code"
+            android:defaultValue="-1"
+            app:argType="integer" />
+
+        <argument
+            android:name="house_no"
+            android:defaultValue="0"
+            app:argType="integer" />
+
+        <argument
+            android:name="owner_name"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="utility"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="mobile_no"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="govt_id"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="area"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="latitude"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="longitude"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <!-- Additional Arguments from Your Original Code -->
+        <argument
+            android:name="parcel_id"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="featureid"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="village_id"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="PNIL_No"
+            android:defaultValue=""
+            app:argType="string" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/profile_Fragment"
+        android:name="com.example.land_parcel.View.Fragment.UserProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_user_profile">
+
+        <action
+            android:id="@+id/action_profile_Fragment_to_surveyorFragment"
+            app:destination="@id/surveyorFragment" />
+        <action
+            android:id="@+id/action_profile_Fragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/dashboard_Fragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_profile_Fragment_to_changepasswordFragment"
+            app:destination="@id/changepasswordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pd_Fragment"
+        android:name="com.example.land_parcel.View.Fragment.PDFViewerFragment"
+        android:label="fragment_pdf"
+        tools:layout="@layout/fragment_p_d_f_viewer">
+
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.land_parcel.View.Fragment.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_splashFragment_to_dashboardFragment"
+            app:destination="@id/dashboard_Fragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.land_parcel.View.Fragment.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_dashboard_Fragment"
+            app:destination="@id/dashboard_Fragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/updateFormFragment"
+        android:name="com.example.land_parcel.View.Fragment.UpdateFormFragment"
+        android:label="fragment_update_form"
+        tools:layout="@layout/fragment_update_form" >
+        <action
+            android:id="@+id/action_updateFormFragment_to_dashboard_Fragment"
+            app:destination="@id/dashboard_Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/syncFragment"
+        android:name="com.example.land_parcel.View.Fragment.SyncFragment"
+        android:label="fragment_sync"
+        tools:layout="@layout/fragment_sync" />
+    <fragment
+        android:id="@+id/surveyorFragment"
+        android:name="com.example.land_parcel.View.Fragment.SurveyorHistoryFragment"
+        android:label="fragment_surveyor_history"
+        tools:layout="@layout/fragment_surveyor_history" />
+    <fragment
+        android:id="@+id/changepasswordFragment"
+        android:name="com.example.land_parcel.View.Fragment.ChangePasswordFragment"
+        android:label="fragment_change_password"
+        tools:layout="@layout/fragment_change_password" >
+        <action
+            android:id="@+id/action_changepasswordFragment_to_profile_Fragment"
+            app:destination="@id/profile_Fragment" />
+    </fragment>
+</navigation>

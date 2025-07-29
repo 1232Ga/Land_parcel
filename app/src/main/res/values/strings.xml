@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Land Parcel</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello Aditya </string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiZ2FydWRhdWF2MTIiLCJhIjoiY202NjJsMjlkMXRoODJ3c2VxMm1tdjNscSJ9.Gr_ShR1bnuNwV7E-5HHiYA</string>
+    <string name="welcome">Welcome!</string>
+    <string name="details_to_continue">Please enter your login details to  continue</string>
+    <string name="sign_in">Sign In</string>
+    <string name="password">Password</string>
+    <string name="email_id">Email ID</string>
+    <string name="asterisk">*</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="update_survey">Update Survey</string>
+    <string name="no_data_found">No data found</string>
+    <string name="action">Action</string>
+    <string name="date">Date</string>
+    <string name="select_all">Select all</string>
+    <string name="uploading_status">Updating status</string>
+    <string name="history">History</string>
+    <string name="status">Status</string>
+    <string name="owner_name">Owner Name</string>
+    <string name="plot_no">Plot No</string>
+    <string name="surveyer_history">Surveyer History</string>
+    <string name="no">No</string>
+    <string name="do_you_want_to_logout">Do you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="logout_successfully">Logout Successfully.</string>
+    <string name="internet_not_available">Internet not available!!</string>
+    <string name="login_successfully">Login successfully.</string>
+    <string name="do_you_want_to_update_data">Do you want to Update data?</string>
+    <string name="do_you_want_to_sync_data">Do you want to sync data?</string>
+    <string name="syncing_data">Syncing data...</string>
+    <string name="aadhar_card">Aadhar Card</string>
+    <string name="voter_id">Voter ID</string>
+    <string name="registry_copy">Registry Copy</string>
+    <string name="land_naksha">Land Naksha</string>
+    <string name="driving_licence">Driving Licence</string>
+    <string name="other_document">Other Document</string>
+
+
+</resources>
