@@ -15,7 +15,6 @@ data class SurveyData(
     val Latitude: String,
     val Longitude: String,
     val Area:String,
-    val Land_Use: String,
     val Tehsil: String,
     val VillName: String,
     val Village_Id: String,
@@ -29,4 +28,5 @@ data class SurveyData(
     var fileName: String,
     var PNIL_No: String,
     var GovtID: String,
+    var Father_na: String,
 )

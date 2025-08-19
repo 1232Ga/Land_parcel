@@ -20,7 +20,7 @@ class ChangePasswordRepositories @Inject constructor(@LandQualifiers.UserRetrofi
     private val _chnagepassResponse=MutableLiveData<NetworkSealed<ChangePasswordResponse>>()
     val changepassResponse:LiveData<NetworkSealed<ChangePasswordResponse>> get()=_chnagepassResponse
 
-    suspend fun changepassword(token: String,userid:String,changePasswordRequest: ChangePasswordRequest){
+    suspend fun changepassword(token: String, userid:String,changePasswordRequest: ChangePasswordRequest){
         if(networkUtils.isNetworkConnectionAvailable()){
             _chnagepassResponse.postValue(NetworkSealed.Loading())
             val result=apiService.changePassword("Bearer "+token,userid,changePasswordRequest)

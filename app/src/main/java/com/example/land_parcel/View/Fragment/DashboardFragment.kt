@@ -5,9 +5,15 @@ import android.app.Dialog
 import android.app.DownloadManager
 import android.app.ProgressDialog
 import android.content.Context
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -31,20 +37,26 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import androidx.room.RoomDatabase
 import com.bumptech.glide.Glide
 import com.example.land_parcel.PDFReport.Interface.RetrofitClientReport
 import com.example.land_parcel.PDFReport.Model.LandSurveyRequest
+import com.example.land_parcel.PDFReport.ReportIntiate.Interface.RetrofitClientReportIntiate
+import com.example.land_parcel.PDFReport.ReportIntiate.Model.ParcelReportRequest
+import com.example.land_parcel.PDFReport.ReportIntiate.Response.ReportResponse
+import com.example.land_parcel.PDFReport.ReportModel.Response.LandParcel
 import com.example.land_parcel.R
 import com.example.land_parcel.Utils.BaseFragment
 import com.example.land_parcel.Utils.NetworkConnectivityCallback
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.PrefManager
+import com.example.land_parcel.Utils.ReportStatus
 import com.example.land_parcel.databinding.DialogConfirmationBinding
 import com.example.land_parcel.databinding.DialogExitBinding
 import com.example.land_parcel.databinding.DialogSyncReportBinding
 import com.example.land_parcel.databinding.FragmentDashboardBinding
 import com.example.land_parcel.db.LandDatabase
+import com.example.land_parcel.model.Pnil.MyViewModel
+import com.example.land_parcel.model.Pnil.PnilEntity
 import com.example.land_parcel.model.VillageModel.VillageItem
 import com.example.land_parcel.network.NetworkSealed
 import com.example.land_parcel.viewmodel.DashboardViewModel
@@ -77,13 +89,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListener, NetworkConnectivityCallback {
+
     private lateinit var bindingAnalytics: FragmentDashboardBinding
     private val bindings get() = bindingAnalytics
     private val viewmodel:DashboardViewModel by viewModels()
+   // private val viewmodelpnil:MyViewModel by viewModels()
     @Inject
     lateinit var prefManager: PrefManager
     @Inject
@@ -92,6 +109,9 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     lateinit var landDatabase: LandDatabase
     private var syncingDialog: Dialog? = null
     private var progressDialog: Dialog? = null
+
+    private var response: LandParcel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token))
@@ -136,6 +156,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     exit()
                 }
             })
+
     }
     private fun exit() {
         val syncCheckDialogBinding: DialogExitBinding = DialogExitBinding.inflate(layoutInflater)
@@ -208,6 +229,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     override fun onResume() {
         super.onResume()
         getview()
+        setObservers()
     }
     private fun setMapStyleAndWMS(mapboxMap: MapboxMap, styleUrl: String) {
         setMapType(viewmodel.currentStyleIndex)
@@ -315,12 +337,13 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                             VillageItem(village.VillageId, village.VillageName) } ?: emptyList()
                         villageList = villageList.asReversed()
                         if (villageList.isEmpty()) {
-                            villageList = listOf(VillageItem("VillageId", "No village assigned"))
+                            villageList = listOf(VillageItem("VillageId", "Select Village"))
                         }
                         resetLayerVisibility()
                         CoroutineScope(Dispatchers.IO).launch {
                             if (networkUtils.isNetworkConnectionAvailable() && !viewmodel.isVillageDataLoaded) {
                                 for (i in 0..villageList.lastIndex) {
+                                    prefManager.setVillageIDHypen(villageList[i].villageId)
                                     val villageIdWithoutHyphens = villageList[i].villageId.replace("-", "")
                                     val villname = villageList[i].villageName.replace(" ", "")
                                     val tempVillageId = "${villname}$villageIdWithoutHyphens"
@@ -341,6 +364,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                                         bindings.villageSpin.setSelection(position)
                                         val selectedVillage = villageList[position]
                                         viewmodel.selectedVillage = selectedVillage
+                                        prefManager.setVillageIDHypen(selectedVillage.villageId)
                                         val villageIdWithoutHyphens = selectedVillage.villageId.replace("-", "")
                                         bindings.parcelLayer.text = selectedVillage.villageName
                                         val villname = selectedVillage.villageName.replace(" ", "")
@@ -353,6 +377,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                                         if (position >= 0 && position < villageList.size) {
                                             val selectedVillage = villageList[position]
                                             viewmodel.selectedVillage = selectedVillage
+                                            prefManager.setVillageIDHypen(selectedVillage.villageId)
                                             val villageIdWithoutHyphens = selectedVillage.villageId.replace("-", "")
                                             bindings.parcelLayer.text = selectedVillage.villageName
                                             val villname = selectedVillage.villageName.replace(" ", "")
@@ -373,6 +398,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     }
                 }
             }
+
             viewmodel.surveyData.observe(this) { surveyDataList ->
                 val style = viewmodel.maMap?.style
                 lifecycleScope.launch {
@@ -416,7 +442,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                                 )
                             ) // Default color
                         )
-                    } else {
+                    }
+                    else {
                         Expression.color(
                             ContextCompat.getColor(
                                 requireActivity(),
@@ -465,6 +492,20 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     }
                 }
             }
+            viewmodel.parcelReport.observe(viewLifecycleOwner) { result ->
+                result.onSuccess { landParcel ->
+                    response = landParcel
+                    if (landParcel != null) {
+                        prefManager.setPnil(landParcel.PnilNo)
+                       // viewmodelpnil.savePnilNo(landParcel.PnilNo) // Save to DB
+                    } else {
+                        println("No parcel found.")
+                    }
+                }.onFailure { error ->
+                    println("Error: ${error.message}")
+                }
+            }
+
         }
         catch (e:Exception){
           Log.d("Dropdown_Dash",e.message.toString())
@@ -493,6 +534,10 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     }
     private fun handleFeatureClick(feature: Feature, s: String) {
         val properties = feature.properties()
+        val villageId = viewmodel.selectedVillage?.villageId
+        val khasraNumber = properties?.get("Khasra_No").getAsSafeString()
+        viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, "Bearer "+prefManager.getToken())
+
         val featureId = feature.id() ?: "Unknown"
         val geometryJson = feature.geometry()?.toJson()
         if (geometryJson.isNullOrEmpty()) {
@@ -503,6 +548,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         try {
             val encodedPoint = findPointOnSurface(geometryJson)
             println("Encoded point: $encodedPoint")
+            val pnil = generatePNILFromGeoJson(geometryJson, 5)
+            println("PNIL: $pnil")
 
             val bundle = Bundle().apply {
                 putString("owner_name", properties?.get("Owner").getAsSafeString())
@@ -526,6 +573,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 putString("area", properties?.get("Area").getAsSafeString())
                 putString("latitude", properties?.get("Latitude").getAsSafeString())
                 putString("longitude", properties?.get("Longitude").getAsSafeString())
+                putString("Father_na", properties?.get("Father_na").getAsSafeString())
             }
 
             updateDialog(
@@ -559,17 +607,47 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         updateSurveyBinding.bloackName.text = "Block: $blockName"
         updateSurveyBinding.plotNoNew.text = khasraNo.toString()
         updateSurveyBinding.ownersName.text = ownerName
+
+
+
+
         if (layers_type.equals("Polygon_layer")) {
-            updateSurveyBinding.genrateReport.visibility = View.VISIBLE
-            updateSurveyBinding.genrateReport.setOnClickListener {
-                dialog.dismiss()
-                downloadreportDialog(feature)
+
+            if (networkUtils.isNetworkConnectionAvailable()) {
+                updateSurveyBinding.genrateReport.visibility = View.VISIBLE
+                updateSurveyBinding.genrateReport.setOnClickListener {
+                    dialog.dismiss()
+                    response?.let { response->
+                        downloadreportDialog(feature, response)
+                    } ?: run {
+                        Toast.makeText(context, "No report data available", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
             }
-        } else if (layers_type.equals("Changes_layer")) {
-            updateSurveyBinding.genrateReport.visibility = View.VISIBLE
-            updateSurveyBinding.genrateReport.setOnClickListener {
-                dialog.dismiss()
-                downloadreportDialog(feature)
+            else {
+                updateSurveyBinding.genrateReport.visibility = View.GONE
+                showToast("No Internet..")
+
+            }
+
+        }
+        else if (layers_type.equals("Changes_layer")) {
+
+            if (networkUtils.isNetworkConnectionAvailable()) {
+                updateSurveyBinding.genrateReport.visibility = View.VISIBLE
+                updateSurveyBinding.genrateReport.setOnClickListener {
+                    dialog.dismiss()
+                    response?.let { response->
+                        downloadreportDialog(feature, response)
+                    } ?: run {
+                        Toast.makeText(context, "No report data available", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                updateSurveyBinding.genrateReport.visibility = View.GONE
+                showToast("No Internet..")
+
             }
         }
 
@@ -585,32 +663,131 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         }
 
     }
-    private fun downloadreportDialog(feature: Feature) {
-        val syncDialogBinding: DialogSyncReportBinding =
-            DialogSyncReportBinding.inflate(layoutInflater)
+    private fun downloadreportDialog(feature: Feature, response: LandParcel) {
+        val syncDialogBinding: DialogSyncReportBinding = DialogSyncReportBinding.inflate(layoutInflater)
         syncingDialog = Dialog(requireActivity())
         syncingDialog?.setContentView(syncDialogBinding.root)
         syncingDialog?.setCancelable(false)
         syncingDialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         syncingDialog?.show()
-        syncDialogBinding.btnSave.setOnClickListener {
-            progressDialog = ProgressDialog(requireActivity())
-            (progressDialog as ProgressDialog).setMessage("Downloading...")
-            progressDialog?.setCancelable(false)
-            progressDialog?.show()
-            if (networkUtils.isNetworkConnectionAvailable()) {
-                generateReport(feature)
-            } else {
-                showToast("No Internet..")
-                progressDialog?.dismiss()
-            }
+        val properties = feature.properties()
+        val statusCodeFromApi = response.Status
+        val khasraNumbers: Int = response.KhasraNumber
+        val status = ReportStatus.fromCode(statusCodeFromApi)
+        val apiDate = response.ReportGeneratedOn
+        val apiDate1 = response.LandParcelUpdatedOn
+        val reportlink = response.ReportURL
+        val formattedDate = apiDate.let { convertIsoToNormalDate(it) } ?: "Date not available"
+        val formattedDate1 = apiDate1.let { convertIsoToNormalDate(it) } ?: "Date not available"
 
+
+        syncDialogBinding.khasraNo.setText(khasraNumbers.toString())
+        syncDialogBinding.UlpinNo.setText(response.PnilNo)
+        syncDialogBinding.parcelUpdatedOn.setText(formattedDate1)
+        syncDialogBinding.GeneratedReport.setText(formattedDate)
+        val statusColor = when (status) {
+            ReportStatus.NOTSTARTED -> Color.YELLOW
+            ReportStatus.INITIATED -> Color.parseColor("#35AFFA")
+            ReportStatus.COMPLETED -> Color.parseColor("#58C067")
+            ReportStatus.UPDATED -> Color.parseColor("#fa6635")
+            ReportStatus.FAILED -> Color.RED
+            else -> Color.BLACK
+        }
+        val background = syncDialogBinding.dotView.background as GradientDrawable
+        background.setColor(statusColor)
+        syncDialogBinding.ReportStatus.text = status?.name ?: "Unknown"
+        if(statusCodeFromApi == 0 || statusCodeFromApi == 3){
+            syncDialogBinding.initiateReportBtn.visibility = View.VISIBLE
+            syncDialogBinding.ReportDownloading.visibility = View.GONE
+            syncDialogBinding.ReportDownloaded.visibility = View.GONE
+        }
+        else if(statusCodeFromApi==1){
+            syncDialogBinding.initiateReportBtn.visibility = View.GONE
+            syncDialogBinding.ReportDownloading.visibility = View.VISIBLE
+            syncDialogBinding.ReportDownloaded.visibility = View.GONE
+        }
+        else if(statusCodeFromApi==2){
+            syncDialogBinding.initiateReportBtn.visibility = View.GONE
+            syncDialogBinding.ReportDownloading.visibility = View.GONE
+            syncDialogBinding.ReportDownloaded.visibility = View.VISIBLE
+        }
+        syncDialogBinding.initiateReportBtn.setOnClickListener{
             syncingDialog?.dismiss()
+            val request = ParcelReportRequest(
+                khasra_no = properties?.get("Khasra_No").getAsSafeInt(),
+                village_id = viewmodel.selectedVillage?.villageId.toString(),
+                village_name = properties?.get("VillName").getAsSafeString(),
+                district_name = properties?.get("DistName").getAsSafeString(),
+                area = properties?.get("Area").getAsSafeString(),
+                tehsil = properties?.get("Tehsil").getAsSafeString(),
+                owner = properties?.get("Owner").getAsSafeString(),
+                govt_id = properties?.get("GovtID").getAsSafeString(),
+                father_name = properties?.get("Father_na").getAsSafeString(),
+                land_type = properties?.get("LandType").getAsSafeString(),
+                mobile_no = properties?.get("MobileNo").getAsSafeString(),
+                pnil_no = response.PnilNo.toString(),
+                house_no = properties?.get("HouseNo").getAsSafeString(),
+                block = properties?.get("Block").getAsSafeString("Unknown"),
+                Land_parcel_updated_on = getFormattedDateISO()
+            )
+            val gson = Gson()
+            val requestJson = gson.toJson(request)
+            Log.d("RequestJSON", requestJson)
+
+            RetrofitClientReportIntiate.apiService.uploadParcelReport("Bearer "+prefManager.getToken(),request).enqueue(object :
+                Callback<ReportResponse> {
+                override fun onResponse(call: Call<ReportResponse>, response: Response<ReportResponse>) {
+                    if (response.isSuccessful) {
+                        val result = response.body()
+                        Toast.makeText(context, "${result?.Message}", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Failed: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ReportResponse>, t: Throwable) {
+                    Toast.makeText(context, "Error: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+        syncDialogBinding.ReportDownloaded.setOnClickListener {
+            syncingDialog?.dismiss()
+            val fileUrl = reportlink  // S3 URL
+            val timestamp = System.currentTimeMillis()  // Or use server timestamp if available
+            val fileName = "survey_${properties?.get("Khasra_No").getAsSafeString()}_$timestamp.pdf"
+            downloadFile(requireContext(), fileUrl, fileName)
         }
         syncDialogBinding.btnCancel.setOnClickListener {
             syncingDialog?.dismiss()
         }
+
+
+
+
+//        syncDialogBinding.btnSave.setOnClickListener {
+//
+//            progressDialog = ProgressDialog(requireActivity())
+//            (progressDialog as ProgressDialog).setMessage("Downloading...")
+//            progressDialog?.setCancelable(false)
+//            progressDialog?.show()
+//            if (networkUtils.isNetworkConnectionAvailable()) {
+//                generateReport(feature)
+//            } else {
+//                showToast("No Internet..")
+//                progressDialog?.dismiss()
+//            }
+//
+//            syncingDialog?.dismiss()
+//        }
     }
+    fun getFormattedDate(): String {
+        val date = Date() // current date/time
+        val formatter = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.UK)
+        formatter.timeZone = TimeZone.getTimeZone("UTC") // or TimeZone.getDefault() if needed
+        return formatter.format(date)
+    }
+
+
     private fun generateReport(feature: Feature) {
         val properties = feature.properties()
         val geometryJson = feature.geometry()?.toJson()
@@ -640,8 +817,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             date = properties?.get("date").getAsSafeString(),
             user_id = prefManager.getUserId().toString(),
             document = properties?.get("document").getAsSafeString(),
-            remark = properties?.get("remark").getAsSafeString()
-        )
+            remark = properties?.get("remark").getAsSafeString())
+
         lifecycleScope.launch {
             val gson = Gson()
             val json = gson.toJson(request)
@@ -669,6 +846,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
         }
     }
+
     private var downloadId: Long = 0
     private var progressDialogPercentage: ProgressDialog? = null
     private fun downloadFile(context: Context, fileUrl: String?, fileName: String) {
@@ -845,7 +1023,9 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             .position(LatLng(lat, lng))
         viewmodel.maMap?.addMarker(markerOptions)
     }
+
     @Deprecated("Deprecated in Java")
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
@@ -856,6 +1036,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             }
         }
     }
+
     private fun setMapType(type: Int) {
         if (!networkUtils.isNetworkConnectionAvailable()) {
             val message = when (type) {
@@ -887,6 +1068,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         }
         selectedText.setTextColor(ContextCompat.getColor(requireActivity(), R.color.primary_color))
     }
+
     private fun resetLayerVisibility() {
         viewmodel.isTileVisible = true// Toggle state
         bindings.parcelLayer.isChecked = true
@@ -898,6 +1080,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         bindings.plotIdLayer.isChecked = true
         viewmodel.maMap?.style?.let { togglePlotId(it) }
     }
+
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.profile_view -> {
@@ -1021,6 +1204,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
         }
     }
+
     private fun fetchCurrentLocationotho(lati: Double, longi: Double) {
         bindings.mapView.getMapAsync { mapboxMap ->
             val latLng = LatLng(lati, longi)
@@ -1030,10 +1214,12 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 .build()
         }
     }
+
     override fun onInternetConnected() {
         viewmodel.maMap?.let { setMapStyleAndWMS(it, mapStyles[viewmodel.currentStyleIndex]) }
 
     }
+
     override fun onInternetDisconnected() {
        // showToast("Internet disconnected")
     }

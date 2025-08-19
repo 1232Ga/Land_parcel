@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -16,6 +17,7 @@ class SyncAdapter(
     private val context: Context,
     private val imageList: MutableList<SurveyData>   ,
  private val onImageClick: (Int) -> Unit,
+ private val onEditClick: (SurveyData,Int) -> Unit,
  private val onSyncItemClick: (SurveyData,Int) -> Unit
 ) :
     RecyclerView.Adapter<SyncAdapter.ImageViewHolder>() {
@@ -26,6 +28,7 @@ class SyncAdapter(
         val img_count: TextView = itemView.findViewById(R.id.img_count)
         val imageView:LinearLayout=itemView.findViewById(R.id.view_lay)
         val syncData:LinearLayout=itemView.findViewById(R.id.sncdata)
+        val editdata:ImageView=itemView.findViewById(R.id.editdata)
         val serial_number:TextView=itemView.findViewById(R.id.serial_number)
 
 
@@ -48,6 +51,9 @@ class SyncAdapter(
         }
         holder.syncData.setOnClickListener{
             onSyncItemClick(imageList[position],position)
+        }
+        holder.editdata.setOnClickListener{
+            onEditClick(imageList[position],position)
         }
         val formattedDate = formatSurveyDate(imageList[position].SurveyDate)
         holder.date.text = formattedDate

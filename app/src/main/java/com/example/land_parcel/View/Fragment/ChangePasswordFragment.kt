@@ -31,6 +31,7 @@ class ChangePasswordFragment : BaseFragment(), View.OnClickListener {
     lateinit var networkUtils: NetworkUtils
 
     private val viewmodel:ChangePasswordViewmodel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {

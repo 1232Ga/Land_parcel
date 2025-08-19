@@ -13,7 +13,8 @@ class PrefManager @Inject constructor(context: Context) {
         private const val USER_NAME="userName"
         private const val USER_ID="userId"
         private const val GEO_JSON="geoJson"
-        private const val VILLAGE_ID_NAME="villageIdName"
+        private const val PNIL_JSON="pnil"
+        private const val VILLAGEIDHYPEN="villageIdhypen"
 
     }
 
@@ -32,12 +33,7 @@ class PrefManager @Inject constructor(context: Context) {
     fun getClientId():String?{
         return sharedPreferences.getString(CLIENT_ID,"")
     }
-    fun setVillageIdName(villageIdName:String){
-        sharedPreferences.edit().putString(VILLAGE_ID_NAME,villageIdName).apply()
-    }
-    fun getVillageIdName():String?{
-        return sharedPreferences.getString(VILLAGE_ID_NAME,"")
-    }
+
     fun setToken(token:String){
         sharedPreferences.edit().putString(TOKEN,token).apply()
     }
@@ -67,6 +63,21 @@ class PrefManager @Inject constructor(context: Context) {
 
     fun getGeoJson(): String? {
         return sharedPreferences.getString(GEO_JSON, "{}")
+    }
+
+    fun setPnil(pnil: String?) {
+        sharedPreferences.edit().putString(PNIL_JSON, pnil).apply()
+    }
+
+    fun getVillageIDHypen(): String? {
+        return sharedPreferences.getString(VILLAGEIDHYPEN, "")
+    }
+    fun setVillageIDHypen(VillageIDHypen: String?) {
+        sharedPreferences.edit().putString(VILLAGEIDHYPEN, VillageIDHypen).apply()
+    }
+
+    fun getPnil(): String? {
+        return sharedPreferences.getString(PNIL_JSON, "")
     }
 
 }

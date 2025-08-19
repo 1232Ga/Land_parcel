@@ -3,8 +3,10 @@ package com.example.land_parcel.viewmodel
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.land_parcel.PDFReport.ReportModel.Response.LandParcel
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.PrefManager
 import com.example.land_parcel.View.Fragment.DashboardFragment.Companion.BBOX_LAYER
@@ -12,6 +14,7 @@ import com.example.land_parcel.View.Fragment.DashboardFragment.Companion.Village
 import com.example.land_parcel.View.Fragment.DashboardFragment.Companion.WMTS_SOURCE_CHANGES_URL
 import com.example.land_parcel.View.Fragment.DashboardFragment.Companion.WMTS_SOURCE_POLYGON_URL
 import com.example.land_parcel.db.dao.VillageJsonDao
+import com.example.land_parcel.model.Pnil.PnilDao
 import com.example.land_parcel.model.VillageModel.VillageItem
 import com.example.land_parcel.model.data.GeoJson
 import com.example.land_parcel.model.villageGeoJson.VillageGeoJson
@@ -28,6 +31,9 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -42,6 +48,10 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
 
     val surveyData=repository.surveyData
     val villageResponse=repository.villageResponse
+
+    private val _parcelReport = MutableLiveData<Result<LandParcel?>>()
+    val parcelReport: LiveData<Result<LandParcel?>> = _parcelReport
+    private var pollingJob: Job? = null
 
     var selectedVillage: VillageItem? = null
     var isVillageDataLoaded=false
@@ -258,6 +268,44 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
     fun loadJsonFromFile(filePath: String?): String? {
         val file = filePath?.let { File(it) }
         return if (file?.exists() == true) file.readText(Charsets.UTF_8) else null
+    }
+
+
+
+
+
+
+//    fun fetchParcelReport(villageId: String?, khasraNumber: String,token: String) {
+//        viewModelScope.launch {
+//            val result = repository.getParcelReport(villageId, khasraNumber,token)
+//            _parcelReport.value = result.mapCatching { apiResponse ->
+//                apiResponse.Data?.JsonResultSet?.firstOrNull()
+//            }
+//        }
+//    }
+
+    fun fetchParcelReportPeriodically(villageId: String?, khasraNumber: String, token: String) {
+        pollingJob?.cancel()
+
+        pollingJob = viewModelScope.launch {
+            while (isActive) {
+                try {
+                    val result = repository.getParcelReport(villageId, khasraNumber, token)
+
+                    // Post the first result to LiveData
+                    val parcel = result.getOrNull()?.Data?.JsonResultSet?.firstOrNull()
+                    _parcelReport.value = Result.success(parcel)
+                    if (parcel?.Status == 2) {
+                        break
+                    }
+                } catch (e: Exception) {
+                    _parcelReport.value = Result.failure(e)
+                    break // Stop polling on error (you can change this to continue if needed)
+                }
+
+                delay(5000L) // Wait 5 seconds
+            }
+        }
     }
 
 }

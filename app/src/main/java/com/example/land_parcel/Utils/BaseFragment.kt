@@ -10,6 +10,8 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Build
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import android.os.Parcelable
 import android.util.Patterns
 import android.view.WindowManager
@@ -27,8 +29,18 @@ import com.google.android.material.textfield.TextInputLayout
 import com.mapbox.mapboxsdk.maps.Style
 import org.locationtech.jts.geom.Coordinate
 import java.util.regex.Pattern
+import org.locationtech.jts.geom.*
+import org.wololo.geojson.GeoJSONFactory
+import org.wololo.jts2geojson.GeoJSONReader
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 open class BaseFragment :Fragment() {
+
      val mapStyles = listOf(
         Style.MAPBOX_STREETS,  // Default
         Style.SATELLITE,
@@ -40,12 +52,14 @@ open class BaseFragment :Fragment() {
          Style.TRAFFIC_NIGHT
     )
 
-    private val PASSWORD_POLICY = """Password should be minimum 8 characters long,
+     private val PASSWORD_POLICY = """Password should be minimum 8 characters long,
             |should contain at least one capital letter,
             |at least one small letter,
             |at least one number and
             |at least one special character among ~!@#$%^&*()-_=+|[]{};:'\",<.>/?""".trimMargin()
+
     private val CAMERA_PERMISSION_REQUEST_CODE = 1000
+
     private val GALLERY_PERMISSION_REQUEST_CODE = 1001
 
     fun isValidPassword(data: String,passwordd: TextInputEditText, updateUI: Boolean = true): Boolean {
@@ -113,6 +127,7 @@ open class BaseFragment :Fragment() {
             return true
         }
     }
+
     private fun setError(data: Any, error: String?) {
         if (data is EditText) {
             if (data is TextInputLayout) {
@@ -122,6 +137,7 @@ open class BaseFragment :Fragment() {
             }
         }
     }
+
     fun showToast(msg: String?) {
         requireActivity().runOnUiThread(Runnable {
             Snackbar.make(requireActivity().findViewById(R.id.content), msg!!, Snackbar.LENGTH_SHORT).show()
@@ -133,7 +149,6 @@ open class BaseFragment :Fragment() {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
     }
-
 
     fun requestPermission() {
         ActivityCompat.requestPermissions(
@@ -198,24 +213,35 @@ open class BaseFragment :Fragment() {
     // Encode the float to Base32
     private val Base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
-    fun encodeFloatToBase32(number: Double): String {
-        // Separate integer and fractional parts
-        val integerPart = number.toInt()
-        var fractionalPart = number - integerPart
-
-        // Encode integer part
-        val integerBase32 = encodeIntegerToBase32(integerPart)
-
-        // Encode fractional part (similar approach to Python example)
-        val fractionalBase32 = StringBuilder()
-        for (i in 0 until 4) {  // Encode a few digits, adjust the loop if more precision is needed
-            fractionalPart *= 32
-            val digit = fractionalPart.toInt()
-            fractionalBase32.append(Base32Chars[digit])  // Append the base32 character
-            fractionalPart -= digit
+//    fun encodeFloatToBase32(number: Double): String {
+//        // Separate integer and fractional parts
+//        val integerPart = number.toInt()
+//        var fractionalPart = number - integerPart
+//
+//        // Encode integer part
+//        val integerBase32 = encodeIntegerToBase32(integerPart)
+//
+//        // Encode fractional part (similar approach to Python example)
+//        val fractionalBase32 = StringBuilder()
+//        for (i in 0 until 4) {  // Encode a few digits, adjust the loop if more precision is needed
+//            fractionalPart *= 32
+//            val digit = fractionalPart.toInt()
+//            fractionalBase32.append(Base32Chars[digit])  // Append the base32 character
+//            fractionalPart -= digit
+//        }
+//
+//        return "$integerBase32$fractionalBase32"
+//    }
+    fun encodeFloatToBase32(value: Double): String {
+        val shifted = ((value + 90) * 100000).toLong()
+        val base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+        var result = ""
+        var temp = shifted
+        while (temp > 0) {
+            result = base32Chars[(temp % 32).toInt()] + result
+            temp /= 32
         }
-
-        return "$integerBase32$fractionalBase32"
+        return result.padStart(5, 'A')
     }
 
     private fun encodeIntegerToBase32(number: Int): String {
@@ -262,6 +288,27 @@ open class BaseFragment :Fragment() {
 
         } catch (e: Exception) {
             throw IllegalArgumentException("Error parsing GeoJSON or computing point on surface: ${e.message}")
+        }
+    }
+
+    fun generatePNILFromGeoJson(geoJson: String, floorNumber: Int): String {
+        try {
+            val reader = GeoJSONReader()
+            val geoJsonObj = GeoJSONFactory.create(geoJson)
+            val geometry: Geometry = reader.read(geoJsonObj)
+
+            // Use centroid of geometry
+            val point = geometry.centroid
+            val lat = point.y
+            val lon = point.x
+
+            val encodedLat = encodeFloatToBase32(lat)
+            val encodedLon = encodeFloatToBase32(lon)
+            val floor = "FL" + floorNumber.toString().padStart(2, '0')
+
+            return "$encodedLon-$encodedLat-$floor"
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Error generating PNIL: ${e.message}")
         }
     }
 
@@ -314,7 +361,7 @@ open class BaseFragment :Fragment() {
         return Point(centroidX, centroidY)
     }
 
-     fun updateDialog(message: String?) {
+    fun updateDialog(message: String?) {
         val LoginDialogBinding: DialogResponseLoginBinding =
             DialogResponseLoginBinding.inflate(layoutInflater)
         val dialog = Dialog(requireActivity())
@@ -330,5 +377,39 @@ open class BaseFragment :Fragment() {
             dialog.dismiss()
         }
 
+    }
+
+
+    fun formatApiDateTime(apiDateTime: String): String {
+        val zonedDateTime = ZonedDateTime.parse(apiDateTime)
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+        return zonedDateTime.format(formatter)
+    }
+//    fun convertIsoToNormalDate(isoDate: String): String {
+//        val instant = Instant.parse(isoDate) // parse ISO string
+//        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.getDefault())
+//            .withZone(ZoneId.systemDefault()) // convert to device local time
+//        return formatter.format(instant)
+//    }
+
+    fun convertIsoToNormalDate(isoDate: String?): String {
+        if (isoDate.isNullOrEmpty()) return "Date not available"
+        return try {
+            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            parser.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date = parser.parse(isoDate)
+            val formatter = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.US)
+            formatter.format(date ?: return "Date not available")
+        } catch (e: Exception) {
+            "Invalid date"
+        }
+    }
+
+    fun getFormattedDateISO(): String {
+        val date = Date()
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.UK)
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        return formatter.format(date)
     }
 }

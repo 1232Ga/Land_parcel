@@ -23,6 +23,7 @@ import com.example.land_parcel.repositories.LogoutRepositories
 class ChangePasswordViewmodel @Inject constructor(private val changepasswordRepo: ChangePasswordRepositories, private val prefManager: PrefManager):ViewModel() {
 
     val changeResponse=changepasswordRepo.changepassResponse
+
     suspend fun ChangePassword(token:String,userID:String,oldPassword: String, newPassword: String) {
         val changePasswordRequest = ChangePasswordRequest(oldPassword,newPassword)
         changepasswordRepo.changepassword(token,userID,changePasswordRequest)

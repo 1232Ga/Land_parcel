@@ -1,5 +1,8 @@
 package com.example.land_parcel.network
 
+import com.example.land_parcel.PDFReport.ReportModel.Response.ApiResponse
+import com.example.land_parcel.PDFReport.ReportUpdate.Model.ReportRequest
+import com.example.land_parcel.PDFReport.ReportUpdate.Response.ReportUpdateResponse
 import com.example.land_parcel.model.ChangePassword.ChangePasswordRequest
 import com.example.land_parcel.model.ChangePassword.ChangePasswordResponse
 import com.example.land_parcel.model.Logout.LogoutRequest
@@ -18,6 +21,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface ApiService {
@@ -45,4 +49,20 @@ interface ApiService {
     @Headers("Content-Type: application/xml", "Accept: application/xml")
     @POST
     fun sendWfsTransaction(@Url url: String, @Body body: RequestBody): Call<ResponseBody>
+
+   //Intiate report
+    @GET("report/list/landparcel")
+    suspend fun getLandParcelReport(
+        @Header("Authorization") token: String?,
+        @Query("villageId") villageId: String?,
+        @Query("khasraNumber") khasraNumber: String):
+            Response<ApiResponse>
+
+    //update report
+    @POST("report/update/landparcel/status")
+    suspend fun getUpdateReport(
+        @Header("Authorization") token: String?,
+        @Body reportRequest: ReportRequest,
+         ):Response<ReportUpdateResponse>
+
 }

@@ -15,4 +15,9 @@ object LandQualifiers {
     @Qualifier
     @Retention(AnnotationRetention.RUNTIME)
     annotation class UserRetrofit
+
+
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class ReportRetrofit
 }

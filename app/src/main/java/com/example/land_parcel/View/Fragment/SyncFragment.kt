@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread
@@ -20,11 +21,14 @@ import com.example.land_parcel.R
 import com.example.land_parcel.Utils.BaseFragment
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.PrefManager
+import com.example.land_parcel.Utils.ReportStatus
 import com.example.land_parcel.databinding.DialogSyncProgressBinding
 import com.example.land_parcel.databinding.DialogSyncSurveyBinding
 import com.example.land_parcel.databinding.FragmentSyncBinding
 import com.example.land_parcel.di.modules.RetrofitClient
+import com.example.land_parcel.model.Pnil.MyViewModel
 import com.example.land_parcel.model.survey.SurveyData
+import com.example.land_parcel.network.NetworkSealed
 import com.example.land_parcel.viewmodel.SyncViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +54,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
     lateinit var prefManager: PrefManager
     @Inject
     lateinit var networkUtils: NetworkUtils
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentSyncBinding.inflate(layoutInflater)
         return binding.root
@@ -66,6 +71,16 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                 requireActivity(), it as MutableList<SurveyData>,
                 onSyncItemClick = { syncItem,position ->
                     syncDialog(syncItem,position)
+                },
+                onEditClick = {syncItem,position->
+                    val bundle = Bundle().apply {
+
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_dashboard_Fragment_to_updateFormFragment,
+                        bundle
+                    )
                 },
                 onImageClick = { position ->
                     imageUris = it[position].photos as MutableList<Uri>
@@ -114,7 +129,6 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
         }else{
             syncingDialog?.dismiss()
             Toast.makeText(requireActivity(), "No Internet", Toast.LENGTH_SHORT).show()
-
         }
     }
     private fun syncPdfToS3(synItem: SurveyData, position: Int) {
@@ -129,6 +143,9 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         if (networkUtils.isNetworkConnectionAvailable()) {
                                             synApi(s3Url,synItem,position)
+
+
+
                                         }else{
                                             syncingDialog?.dismiss()
                                             Toast.makeText(requireActivity(), "No Internet", Toast.LENGTH_SHORT).show()
@@ -165,6 +182,14 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                    withContext(Dispatchers.Main){
                        adapter.removeItem(position)
                        showToast("Data sync successfully !")
+                       if(!synItem.fileName.isEmpty())
+                           viewModel.getReportUpdate(
+                               prefManager.getToken(),
+                               synItem.Khasra_No,
+                               prefManager.getVillageIDHypen(),
+                               3,
+                               getFormattedDateISO()
+                           )
                    }
                     viewModel.deleteSurveyDataByPlotId(synItem.Khasra_No)
                     viewModel.getSurveyData()
@@ -191,6 +216,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                     findNavController().navigateUp()
                 }
             })
+        setoberevers()
     }
     private fun showPDFDialog(surveyData: SurveyData) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -219,6 +245,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
         }
     }
     fun createWfsUpdateXml(synItem: SurveyData, s3Url: String): String {
+
         val synItemFeatureId = synItem.featureid
         val updatedFeatureId = synItemFeatureId.replace("Polygon", "Changes")
 
@@ -270,13 +297,6 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
               <wfs:Value>${synItem.Owner}</wfs:Value>
             </wfs:Property> 
             
-            
-            
-            <wfs:Property>
-              <wfs:Name>Land_Use</wfs:Name>
-              <wfs:Value>${synItem.Land_Use}</wfs:Value>
-            </wfs:Property>
-            
             <wfs:Property>
               <wfs:Name>MobileNo</wfs:Name>
               <wfs:Value>${synItem.MobileNo}</wfs:Value>
@@ -285,6 +305,12 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
            <wfs:Property>
              <wfs:Name>GovtID</wfs:Name>
               <wfs:Value>${synItem.GovtID}</wfs:Value>
+            </wfs:Property> 
+            
+            
+            <wfs:Property>
+             <wfs:Name>Father_na</wfs:Name>
+              <wfs:Value>${synItem.Father_na}</wfs:Value>
             </wfs:Property>
             
          
@@ -308,7 +334,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
             
             <wfs:Property>
               <wfs:Name>PNIL_No</wfs:Name>
-              <wfs:Value>${synItem.PNIL_No}</wfs:Value>
+              <wfs:Value>${prefManager.getPnil()}</wfs:Value>
             </wfs:Property>
            
             <wfs:Property>
@@ -341,4 +367,21 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
         </wfs:Transaction>
     """.trimIndent()
     }
+    private fun setoberevers(){
+        viewModel.UpdateReportResponse.observe(viewLifecycleOwner){
+            when(it){
+                is NetworkSealed.Loading->{
+                }
+                is NetworkSealed.Data->{
+                    val response = it.data
+                    Toast.makeText(requireContext(), "Report Updated: ${response!!.Message}", Toast.LENGTH_SHORT).show()
+                }
+                is NetworkSealed.Error->{
+                    showToast(it.message)
+                }
+            }
+        }
+    }
+
+
 }

@@ -186,7 +186,6 @@ class SurveyorHistoryFragment : BaseFragment(), View.OnClickListener,
                         Latitude = properties.getAsSafeString("Latitude", "0.0"), // Ensuring default latitude
                         Longitude = properties.getAsSafeString("Longitude", "0.0"), // Ensuring default longitude
                         Area = properties.getAsSafeString("Area", "0"),
-                        Land_Use = properties.getAsSafeString("Land_Use"),
                         Tehsil = properties.getAsSafeString("Tehsil"),
                         VillName = properties.getAsSafeString("VillName"),
                         Village_Id = properties.getAsSafeString("Village_Id"),
@@ -198,7 +197,8 @@ class SurveyorHistoryFragment : BaseFragment(), View.OnClickListener,
                         filePath = properties.getAsSafeString("document"),
                         fileName = properties.getAsSafeString("fileName"),
                         PNIL_No = properties.getAsSafeString("PNIL_No"),
-                        GovtID = properties.getAsSafeString("GovtID")
+                        GovtID = properties.getAsSafeString("GovtID"),
+                        Father_na = properties.getAsSafeString("Father_na")
                     )
                 }
 

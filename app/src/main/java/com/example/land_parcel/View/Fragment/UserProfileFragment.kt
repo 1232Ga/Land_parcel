@@ -28,6 +28,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserProfileFragment : BaseFragment(), View.OnClickListener {
+
     private lateinit var bindinguser: FragmentUserProfileBinding
     private val bindings get() = bindinguser
     @Inject
@@ -35,6 +36,7 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
     private val viewmodel: LogoutViewmodel by viewModels()
     @Inject
     lateinit var networkUtils: NetworkUtils
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
@@ -49,10 +51,7 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
         bindinguser.logoutBtn.setOnClickListener(this)
         bindinguser.changPassBtn.setOnClickListener(this)
         val email = prefManager.getUserName()
-
-        val name = email!!.substringBefore("@").replace(".", " ").split(" ")
-            .joinToString(" ") { it.capitalize() }
-
+        val name = email!!.substringBefore("@").replace(".", " ").split(" ").joinToString(" ") { it.capitalize() }
         bindinguser.userName.setText(name)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -62,15 +61,11 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
         setobservers()
     }
 
-    companion object {
-
-    }
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.surveyor_btn->{
                 if(networkUtils.isNetworkConnectionAvailable()){
                     findNavController().navigate(R.id.action_profile_Fragment_to_surveyorFragment)
-
                 }else{
                     showToast(getString(R.string.internet_not_available))
                 }

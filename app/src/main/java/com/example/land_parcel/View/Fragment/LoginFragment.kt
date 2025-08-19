@@ -32,7 +32,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginFragment : BaseFragment() {
     lateinit var binding: FragmentLoginBinding
-
     private val viewmodel: LoginViewmodel by viewModels()
     @Inject
     lateinit var networkUtils: NetworkUtils
@@ -42,20 +41,14 @@ class LoginFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
-
         binding=FragmentLoginBinding.inflate(inflater)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewmodel.getClientId(requireActivity())
-
-        if(!networkUtils.isNetworkConnectionAvailable()){
-            offlineDialog()
-        }
-
+        if(!networkUtils.isNetworkConnectionAvailable()){ offlineDialog() }
         binding.signInBtn.setOnClickListener {
             if(networkUtils.isNetworkConnectionAvailable()){
                 if (!validateEmail(binding.username)) {
@@ -70,14 +63,13 @@ class LoginFragment : BaseFragment() {
                     viewmodel.encryptData(binding.username.text.toString(),binding.password.text.toString())
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        viewmodel.getLogin(viewmodel.encodedUsername, viewmodel.encodedPassword)
+                        viewmodel.getLogin(viewmodel.encodedUsername, viewmodel.encodedPassword,"Mobile")
                     }
                 }
             }
             else{
                 showToast(getString(R.string.internet_not_available))
             }
-
         }
         setobservers()
     }
@@ -121,7 +113,6 @@ class LoginFragment : BaseFragment() {
         }
 
     }
-
-
+    
 
 }

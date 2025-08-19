@@ -2,6 +2,7 @@ package com.example.land_parcel.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.land_parcel.PDFReport.ReportModel.Response.ApiResponse
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.Utils
 import com.example.land_parcel.db.LandDatabase
@@ -47,4 +48,23 @@ class DashboardRepository @Inject constructor(landDatabase: LandDatabase,@LandQu
                 _villageResponse.postValue(NetworkSealed.Data(villageDataDao.getAllVillages()))
          }
     }
+
+
+    suspend fun getParcelReport(villageId: String?, khasraNumber: String,token :String): Result<ApiResponse> {
+        return try {
+            val response = apiService.getLandParcelReport(token,villageId, khasraNumber)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Empty Response"))
+            }
+            else {
+                Result.failure(Exception("API Error: ${response.code()} ${response.message()}"))
+            }
+        }
+        catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

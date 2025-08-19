@@ -56,8 +56,8 @@ class LoginViewmodel @Inject constructor(private val loginRepositories: LoginRep
 
     }
 
-    suspend fun getLogin(userName: String, password: String) {
-        val loginRequest = LoginRequest(userName, password)
+    suspend fun getLogin(userName: String, password: String,logintype : String) {
+        val loginRequest = LoginRequest(userName, password,logintype)
         loginRepositories.login(loginRequest)
 
     }

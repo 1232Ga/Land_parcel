@@ -17,7 +17,6 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             buildFeatures {
@@ -114,4 +113,12 @@ dependencies {
     //Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // PNIL Generate
+    implementation ("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation ("org.locationtech.jts:jts-core:1.18.2")
+    implementation ("org.wololo:jts2geojson:0.18.1")
+    implementation ("org.locationtech.jts:jts-core:1.18.2")
+
+
 }

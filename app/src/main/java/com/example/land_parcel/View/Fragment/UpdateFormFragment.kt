@@ -60,6 +60,7 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
     private var PNIL_No = ""
     private var area = ""
     private var govt_id = ""
+    private var Father_na = ""
     private var latitude = ""
     private var longitude = ""
     private var selectedDocument = ""
@@ -138,6 +139,7 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
             longitude = bundle.getString("longitude").toString()
             area = bundle.getString("area").toString()
             govt_id = bundle.getString("govt_id").toString()
+            Father_na = bundle.getString("Father_na").toString()
             documentTypes = listOf(getString(R.string.aadhar_card), getString(R.string.voter_id), getString(R.string.registry_copy), getString(R.string.land_naksha), getString(R.string.driving_licence), getString(R.string.other_document))
             val adapter = ArrayAdapter(requireContext(), R.layout.spinneritembacknew, documentTypes)
             adapter.setDropDownViewResource(R.layout.spinnershowitemdropdownnew)
@@ -151,6 +153,12 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
             binding.pnilIdEt.setText(PNIL_No)
+            if (Father_na.isNullOrEmpty() || Father_na.equals("null", ignoreCase = true)) {
+            binding.fatherNameEt.setText("")
+            }else{
+                binding.fatherNameEt.setText(Father_na)
+            }
+
             binding.remarkEt.setText(bundle.getString("remark").toString())
         }
     }
@@ -169,17 +177,22 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
         val tehsilName = binding.tehsilName.text.toString()
         val villageName = binding.villageNameEt.text.toString()
         val Remark = binding.remarkEt.text.toString()
+        val Father_na = binding.fatherNameEt.text.toString()
         plotId = binding.plotIdEt.text.toString()
         convertImagesToPdf()
         if (exHouseName.isEmpty()) {
             exHouseName = "0"
         }
-        val surveyData = SurveyData(blockName, districtName, exHouseName, landtype, mobileNum,
+        val surveyData = SurveyData(
+            blockName,
+            districtName,
+            exHouseName,
+            landtype,
+            mobileNum,
             ownerName,
             latitude,
             longitude,
             area,
-            utility,
             tehsilName,
             villageName,
             Village_Id,
@@ -191,7 +204,8 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
             pdfPath,
             pdfName,
             PNIL_No,
-            selectedDocument
+            selectedDocument,
+            Father_na,
         )
         viewmodel.updateSurveyData(surveyData)
         binding.progress.visibility = View.GONE

@@ -1,105 +1,407 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/back_white_rect_line_dialog"
     android:layout_height="wrap_content"
     android:padding="@dimen/_10dp"
     android:orientation="vertical">
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10dp"
-        android:layout_marginTop="@dimen/_10dp"
-        android:layout_marginEnd="@dimen/_10dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_height="match_parent">
         <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="@dimen/_60dp"
-            android:gravity="center">
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <ImageView
-                android:layout_height="@dimen/_55dp"
-                android:layout_width="@dimen/_35dp"
-                app:tint="@color/primary_color"
-                android:src="@drawable/ic_report_download_24" />
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_60dp"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_height="@dimen/_55dp"
+                    android:layout_width="@dimen/_35dp"
+                    app:tint="@color/primary_color"
+                    android:src="@drawable/ic_report_download_24" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:text="Do you want to download report?"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/_15sp"
+            android:textStyle="bold" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.4dp"
+            android:layout_marginTop="@dimen/_15dp"
+            android:layout_marginBottom="@dimen/_5dp"
+            android:layout_marginHorizontal="@dimen/_10dp"
+            android:background="@color/text_color"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_10dp"
+            app:layout_constraintTop_toBottomOf="@+id/ll_date">
+
+            <LinearLayout
+
+                android:layout_width="@dimen/_120dp"
+                android:layout_height="40dp"
+                android:layout_margin="@dimen/_5dp"
+                android:background="@drawable/border_btn_bg"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_2dp"
+                android:orientation="horizontal">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no"
+                    android:textColor="@color/primary_color"
+                    android:textSize="@dimen/_14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_save"
+                android:layout_width="@dimen/_120dp"
+                android:layout_height="40dp"
+                android:layout_margin="@dimen/_5dp"
+                android:background="@drawable/button_bg"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_2dp"
+                android:orientation="horizontal">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/yes"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_16sp" />
+
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/_15dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Parcel Report Generation"
+                android:textSize="@dimen/_18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:layout_alignParentStart="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="✕"
+                android:id="@+id/btn_cancel"
+                android:textSize="@dimen/_18sp"
+                android:textColor="@color/text_color"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+     <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/_16dp"
+             android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+         <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1"
+             android:layout_marginTop="@dimen/_10dp"
+             android:gravity="center"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight=".45"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="ROR No."
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/text_color2"
+                    android:layout_marginBottom="8dp"/>
+            </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".1"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=":"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=""
+                     android:gravity="center"
+                     android:fontFamily="@font/poppins_medium"
+                     android:id="@+id/khasra_No"
+                     android:textColor="@color/black"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+
+        </LinearLayout>
+
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:orientation="horizontal"
+             android:weightSum="1"
+             android:layout_marginTop="@dimen/_10dp"
+             android:visibility="visible"
+             android:layout_height="wrap_content">
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text="ULPIN No."
+                     android:fontFamily="@font/poppins_medium"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".1"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=":"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="match_parent">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=" "
+                     android:fontFamily="@font/poppins_medium"
+                     android:id="@+id/Ulpin_No"
+                     android:textColor="@color/black"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+
+         </LinearLayout>
+
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:orientation="horizontal"
+             android:weightSum="1"
+             android:layout_marginTop="@dimen/_10dp"
+
+             android:layout_height="wrap_content">
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text="Generated On"
+                     android:fontFamily="@font/poppins_medium"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".1"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=":"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="match_parent">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=""
+                     android:id="@+id/Generated_Report"
+                     android:textColor="@color/black"
+                     android:fontFamily="@font/poppins_medium"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+
+         </LinearLayout>
 
 
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:orientation="horizontal"
+             android:weightSum="1"
+             android:layout_marginTop="@dimen/_10dp"
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/_10dp"
-        android:layout_marginTop="@dimen/_10dp"
-        android:fontFamily="@font/poppins_medium"
-        android:gravity="center"
-        android:text="Do you want to download report?"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/_15sp"
-        android:textStyle="bold" />
+             android:layout_height="wrap_content">
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text="Parcel Updated On"
+                     android:fontFamily="@font/poppins_medium"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".1"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=":"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="match_parent">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=" "
+                     android:fontFamily="@font/poppins_medium"
+                     android:id="@+id/parcel_updated_on"
+                     android:textColor="@color/black"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.4dp"
-        android:layout_marginTop="@dimen/_15dp"
-        android:layout_marginBottom="@dimen/_5dp"
-        android:layout_marginHorizontal="@dimen/_10dp"
-        android:background="@color/text_color"/>
+         </LinearLayout>
+
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:orientation="horizontal"
+             android:weightSum="1"
+             android:layout_marginTop="@dimen/_10dp"
+             android:layout_height="wrap_content">
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text="Status"
+                     android:fontFamily="@font/poppins_medium"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".1"
+                 android:layout_height="wrap_content">
+                 <TextView
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"
+                     android:text=":"
+                     android:textColor="@color/text_color2"
+                     android:layout_marginBottom="8dp"/>
+             </LinearLayout>
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight=".45"
+                 android:gravity="center|left"
+                 android:orientation="horizontal"
+                 android:layout_height="match_parent">
+                 <View
+                     android:layout_width="@dimen/_10dp"
+                     android:id="@+id/dot_view"
+                     android:layout_height="@dimen/_10dp"
+                     android:layout_marginBottom="@dimen/_2dp"
+                     android:background="@drawable/dot_xml" />
+
+                 <TextView
+                     android:layout_height="match_parent"
+                     android:layout_width="wrap_content"
+                     android:text="Not Started"
+                     android:gravity="center"
+                     android:layout_marginLeft="@dimen/_5dp"
+                     android:fontFamily="@font/poppins_medium"
+                     android:id="@+id/Report_status"
+                     android:textColor="@color/black" />
+             </LinearLayout>
+
+         </LinearLayout>
+
+        </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="@dimen/_10dp"
-        app:layout_constraintTop_toBottomOf="@+id/ll_date">
-
-        <LinearLayout
-            android:id="@+id/btn_cancel"
-            android:layout_width="@dimen/_120dp"
-            android:layout_height="40dp"
-            android:layout_margin="@dimen/_5dp"
-            android:background="@drawable/border_btn_bg"
-            android:gravity="center"
-            android:paddingHorizontal="@dimen/_2dp"
-            android:orientation="horizontal">
-
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no"
-                android:textColor="@color/primary_color"
-                android:textSize="@dimen/_14sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btn_save"
-            android:layout_width="@dimen/_120dp"
-            android:layout_height="40dp"
-            android:layout_margin="@dimen/_5dp"
-            android:background="@drawable/button_bg"
-            android:gravity="center"
-            android:paddingHorizontal="@dimen/_2dp"
-            android:orientation="horizontal">
-
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/yes"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_16sp" />
-
-        </LinearLayout>
-
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/initiateReportBtn"
+            android:text="Initiate Report"
+            android:backgroundTint="@color/primary_color"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="downloading..."
+            android:id="@+id/Report_Downloading"
+            android:visibility="gone"
+            android:backgroundTint="@color/view_line"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Download Report"
+            android:visibility="gone"
+            android:id="@+id/Report_downloaded"
+            android:backgroundTint="@color/primary_color"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
+
 
 
 </LinearLayout>

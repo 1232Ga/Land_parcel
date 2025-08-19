@@ -602,6 +602,62 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_light"
+                    android:text="Father Name"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_4dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:text="@string/asterisk"
+                    android:visibility="gone"
+                    android:textAlignment="center"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40dp"
+                android:layout_marginTop="@dimen/_10dp"
+                android:background="@color/camera_bg">
+
+                <EditText
+                    android:id="@+id/father_name_et"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:drawablePadding="@dimen/_5pt"
+                    android:fontFamily="@font/poppins_regular"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:paddingStart="@dimen/_5pt"
+                    android:singleLine="true"
+                    android:visibility="visible"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintAnimationEnabled="true"
+                    app:passwordToggleEnabled="false" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10dp"
                 android:visibility="gone"
                 android:orientation="horizontal">
 
@@ -660,6 +716,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10dp"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <TextView
@@ -689,6 +746,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40dp"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/_10dp"
                 android:background="@color/camera_bg">
 
@@ -765,7 +823,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <TextView
@@ -784,7 +842,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/_10dp"
                 android:background="@color/camera_bg">
 
@@ -1005,32 +1063,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40dp"
-                android:layout_marginTop="@dimen/_10dp"
-                android:background="@color/camera_bg"
 
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/father_name_et"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:drawablePadding="@dimen/_5pt"
-                    android:fontFamily="@font/poppins_regular"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:paddingStart="@dimen/_5pt"
-                    android:singleLine="true"
-                    android:visibility="visible"
-                    app:boxStrokeWidth="0dp"
-                    app:boxStrokeWidthFocused="0dp"
-                    app:hintAnimationEnabled="true"
-                    app:passwordToggleEnabled="false" />
-            </LinearLayout>
 
 
             <LinearLayout
