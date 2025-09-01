@@ -32,5 +32,8 @@
     <color name="search_bg">#F8F9FE</color>
     <color name="text_color_light">#D3D3D3</color>
     <color name="trans_black">#66000000</color>
+    <color name="background">#FFFFFF</color>
+    <color name="on_background">#000000</color>
+    <color name="primary_dark">#2BBBA8</color>
 
 </resources>

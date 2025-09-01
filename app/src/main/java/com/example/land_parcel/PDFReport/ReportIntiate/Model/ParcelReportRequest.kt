@@ -1,7 +1,7 @@
 package com.example.land_parcel.PDFReport.ReportIntiate.Model
 
 data class ParcelReportRequest(
-    val khasra_no: Int,
+    val khasra_no: String,
     val village_id: String,
     val village_name: String,
     val district_name: String,
@@ -15,5 +15,5 @@ data class ParcelReportRequest(
     val pnil_no: String,
     val house_no: String,
     val block: String,
-    val Land_parcel_updated_on: String
+    val land_parcel_updated_on: String
 )

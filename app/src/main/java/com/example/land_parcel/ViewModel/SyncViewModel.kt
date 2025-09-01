@@ -9,6 +9,7 @@ import com.example.land_parcel.PDFReport.ReportUpdate.Response.ReportUpdateRespo
 import com.example.land_parcel.model.ChangePassword.ChangePasswordRequest
 import com.example.land_parcel.model.survey.SurveyData
 import com.example.land_parcel.repositories.SyncRepository
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.Response
@@ -40,6 +41,9 @@ class SyncViewModel @Inject constructor(private val repository: SyncRepository) 
 
     suspend fun getReportUpdate(token:String?,khasra_number:String,village_id:String?,status:Int,date:String){
         val reportRequest = ReportRequest(khasra_number,village_id,status,date)
+        val gson = Gson()
+        val json = gson.toJson(reportRequest)
+        println(json)
         repository.UpdateReport(token,reportRequest)
     }
 }

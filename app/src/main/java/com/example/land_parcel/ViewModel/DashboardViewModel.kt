@@ -48,7 +48,7 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
 
     val surveyData=repository.surveyData
     val villageResponse=repository.villageResponse
-
+    var lastKhasraNumber: String? = null
     private val _parcelReport = MutableLiveData<Result<LandParcel?>>()
     val parcelReport: LiveData<Result<LandParcel?>> = _parcelReport
     private var pollingJob: Job? = null
@@ -303,7 +303,7 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
                     break // Stop polling on error (you can change this to continue if needed)
                 }
 
-                delay(5000L) // Wait 5 seconds
+                delay(30_000) // Wait 5 seconds
             }
         }
     }

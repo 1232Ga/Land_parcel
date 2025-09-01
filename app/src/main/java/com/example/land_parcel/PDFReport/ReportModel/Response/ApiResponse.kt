@@ -13,7 +13,7 @@ data class DataObject(
 )
 
 data class LandParcel(
-    val KhasraNumber: Int,
+    val KhasraNumber: String,
     val VillageId: String,
     val VillageName: String?,
     val ReportURL: String?,

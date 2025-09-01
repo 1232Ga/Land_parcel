@@ -63,8 +63,9 @@ class ChangePasswordFragment : BaseFragment(), View.OnClickListener {
                    }else if (newPassword != confirmPassword) {
                        Toast.makeText(requireActivity(), "New password and Re-enter password do not match.", Toast.LENGTH_SHORT).show()
                    }else{
+                       viewmodel.encryptData(oldPassword,newPassword)
                        lifecycleScope.launch {
-                           viewmodel.ChangePassword(prefManager.getToken()!!,prefManager.getUserId()!!,oldPassword,newPassword)
+                           viewmodel.ChangePassword(prefManager.getToken()!!,prefManager.getUserId()!!,viewmodel.encodedoldPassword,viewmodel.encodednewPassword)
                        }
                    }
                }else{
@@ -82,10 +83,11 @@ class ChangePasswordFragment : BaseFragment(), View.OnClickListener {
                 }
                 is NetworkSealed.Data->{
                     bindinguser.progressCircular.progressCircular.visibility = View.GONE
-                    prefManager.setLogin(false)
-                    showToast(getString(R.string.logout_successfully))
-                    findNavController().navigate(R.id.action_profile_Fragment_to_loginFragment)
-
+                    prefManager.setLogin(true)
+                    showToast(it.data!!.message)
+                    bindinguser.oldPassword.setText("")
+                    bindinguser.newPassword.setText("")
+                    bindinguser.confPassword.setText("")
                 }
                 is NetworkSealed.Error->{
                     bindinguser.progressCircular.progressCircular.visibility = View.GONE

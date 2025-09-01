@@ -219,7 +219,6 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-
                         android:background="@drawable/input_field_border"
                         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#."
                         android:drawableStart="@drawable/ic_lock"
@@ -230,7 +229,7 @@
                         android:inputType="textPassword"
                         android:paddingVertical="0dp"
                         android:singleLine="true"
-                        android:text="Rajshri@123"
+                        android:text="Aditya@1234"
                         android:drawablePadding="5dp"
                         android:textColor="@color/text_color"
                         android:textSize="@dimen/_15sp" />

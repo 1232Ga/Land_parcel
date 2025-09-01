@@ -20,6 +20,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.example.land_parcel.databinding.DialogResponseLoginBinding
 import com.example.land_parcel.model.data.Point
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -140,7 +143,7 @@ open class BaseFragment :Fragment() {
 
     fun showToast(msg: String?) {
         requireActivity().runOnUiThread(Runnable {
-            Snackbar.make(requireActivity().findViewById(R.id.content), msg!!, Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(requireActivity().findViewById(R.id.content), msg!!, Snackbar.LENGTH_LONG).show()
         })
     }
 
@@ -366,7 +369,7 @@ open class BaseFragment :Fragment() {
             DialogResponseLoginBinding.inflate(layoutInflater)
         val dialog = Dialog(requireActivity())
         dialog.setContentView(LoginDialogBinding.root)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setBackgroundDrawableResource(R.color.transparent)
         val layoutParams = dialog.window?.attributes
         layoutParams?.width = (requireContext().resources.displayMetrics.widthPixels * 0.8).toInt() // 90% of screen width
         layoutParams?.height = WindowManager.LayoutParams.WRAP_CONTENT
@@ -412,4 +415,7 @@ open class BaseFragment :Fragment() {
         formatter.timeZone = TimeZone.getTimeZone("UTC")
         return formatter.format(date)
     }
+
+
+
 }

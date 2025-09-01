@@ -34,8 +34,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.land_parcel.PDFReport.Interface.RetrofitClientReport
@@ -50,6 +53,7 @@ import com.example.land_parcel.Utils.NetworkConnectivityCallback
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.PrefManager
 import com.example.land_parcel.Utils.ReportStatus
+import com.example.land_parcel.Utils.SessionManager
 import com.example.land_parcel.databinding.DialogConfirmationBinding
 import com.example.land_parcel.databinding.DialogExitBinding
 import com.example.land_parcel.databinding.DialogSyncReportBinding
@@ -100,7 +104,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     private lateinit var bindingAnalytics: FragmentDashboardBinding
     private val bindings get() = bindingAnalytics
     private val viewmodel:DashboardViewModel by viewModels()
-   // private val viewmodelpnil:MyViewModel by viewModels()
+
+    // private val viewmodelpnil:MyViewModel by viewModels()
     @Inject
     lateinit var prefManager: PrefManager
     @Inject
@@ -120,6 +125,12 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         bindingAnalytics = FragmentDashboardBinding.inflate(inflater, container, false)
         val view = bindings.root
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getview()
+        setObservers()
     }
     private fun getview() {
         requireActivity().registerReceiver(this.mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
@@ -228,8 +239,13 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     }
     override fun onResume() {
         super.onResume()
-        getview()
-        setObservers()
+        val villageId = viewmodel.selectedVillage?.villageId
+        val khasraNumber = viewmodel.lastKhasraNumber
+        val token = "Bearer " + prefManager.getToken()
+        if (!villageId.isNullOrEmpty() && !khasraNumber.isNullOrEmpty()) {
+            viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, token)
+        }
+
     }
     private fun setMapStyleAndWMS(mapboxMap: MapboxMap, styleUrl: String) {
         setMapType(viewmodel.currentStyleIndex)
@@ -398,7 +414,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     }
                 }
             }
-
             viewmodel.surveyData.observe(this) { surveyDataList ->
                 val style = viewmodel.maMap?.style
                 lifecycleScope.launch {
@@ -497,7 +512,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     response = landParcel
                     if (landParcel != null) {
                         prefManager.setPnil(landParcel.PnilNo)
-                       // viewmodelpnil.savePnilNo(landParcel.PnilNo) // Save to DB
                     } else {
                         println("No parcel found.")
                     }
@@ -534,9 +548,16 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     }
     private fun handleFeatureClick(feature: Feature, s: String) {
         val properties = feature.properties()
+//        val villageId = viewmodel.selectedVillage?.villageId
+//        val khasraNumber = properties?.get("Khasra_No").getAsSafeString()
+//        viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, "Bearer "+prefManager.getToken())
+
         val villageId = viewmodel.selectedVillage?.villageId
         val khasraNumber = properties?.get("Khasra_No").getAsSafeString()
-        viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, "Bearer "+prefManager.getToken())
+        viewmodel.lastKhasraNumber = khasraNumber
+        viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, "Bearer " + prefManager.getToken())
+
+
 
         val featureId = feature.id() ?: "Unknown"
         val geometryJson = feature.geometry()?.toJson()
@@ -672,7 +693,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         syncingDialog?.show()
         val properties = feature.properties()
         val statusCodeFromApi = response.Status
-        val khasraNumbers: Int = response.KhasraNumber
+        val khasraNumbers: String = response.KhasraNumber
         val status = ReportStatus.fromCode(statusCodeFromApi)
         val apiDate = response.ReportGeneratedOn
         val apiDate1 = response.LandParcelUpdatedOn
@@ -714,7 +735,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         syncDialogBinding.initiateReportBtn.setOnClickListener{
             syncingDialog?.dismiss()
             val request = ParcelReportRequest(
-                khasra_no = properties?.get("Khasra_No").getAsSafeInt(),
+                khasra_no = properties?.get("Khasra_No").getAsSafeString(),
                 village_id = viewmodel.selectedVillage?.villageId.toString(),
                 village_name = properties?.get("VillName").getAsSafeString(),
                 district_name = properties?.get("DistName").getAsSafeString(),
@@ -728,7 +749,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 pnil_no = response.PnilNo.toString(),
                 house_no = properties?.get("HouseNo").getAsSafeString(),
                 block = properties?.get("Block").getAsSafeString("Unknown"),
-                Land_parcel_updated_on = getFormattedDateISO()
+                land_parcel_updated_on = getFormattedDateISO()
             )
             val gson = Gson()
             val requestJson = gson.toJson(request)
@@ -1044,7 +1065,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 1 -> "Satellite is not available offline"
                 else -> "Terrain is not available offline"
             }
-            showToast(message)
+           // showToast(message)
             return
         }
 
@@ -1216,12 +1237,17 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     }
 
     override fun onInternetConnected() {
-        viewmodel.maMap?.let { setMapStyleAndWMS(it, mapStyles[viewmodel.currentStyleIndex]) }
-
+       // showToast("Internet Connected")
+       // viewmodel.maMap?.let { setMapStyleAndWMS(it, mapStyles[viewmodel.currentStyleIndex]) }
+        if (isAdded && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            viewmodel.maMap?.let {
+                setMapStyleAndWMS(it, mapStyles[viewmodel.currentStyleIndex])
+            }
+        }
     }
 
     override fun onInternetDisconnected() {
        // showToast("Internet disconnected")
     }
-    
+
 }

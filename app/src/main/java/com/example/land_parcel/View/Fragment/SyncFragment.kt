@@ -46,12 +46,18 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SyncFragment : BaseFragment(), View.OnClickListener {
     lateinit var binding: FragmentSyncBinding
+
     lateinit var adapter: SyncAdapter
+
     lateinit var imageUris: MutableList<Uri>
+
     private val viewModel: SyncViewModel by viewModels()
+
     var syncingDialog:Dialog?=null
+
     @Inject
     lateinit var prefManager: PrefManager
+
     @Inject
     lateinit var networkUtils: NetworkUtils
 
@@ -73,14 +79,6 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                     syncDialog(syncItem,position)
                 },
                 onEditClick = {syncItem,position->
-                    val bundle = Bundle().apply {
-
-                    }
-
-                    findNavController().navigate(
-                        R.id.action_dashboard_Fragment_to_updateFormFragment,
-                        bundle
-                    )
                 },
                 onImageClick = { position ->
                     imageUris = it[position].photos as MutableList<Uri>
@@ -143,15 +141,11 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         if (networkUtils.isNetworkConnectionAvailable()) {
                                             synApi(s3Url,synItem,position)
-
-
-
                                         }else{
                                             syncingDialog?.dismiss()
                                             Toast.makeText(requireActivity(), "No Internet", Toast.LENGTH_SHORT).show()
 
                                         }
-
                                     }
                                 }
                             }
@@ -190,6 +184,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                                3,
                                getFormattedDateISO()
                            )
+
                    }
                     viewModel.deleteSurveyDataByPlotId(synItem.Khasra_No)
                     viewModel.getSurveyData()
@@ -218,6 +213,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
             })
         setoberevers()
     }
+
     private fun showPDFDialog(surveyData: SurveyData) {
         CoroutineScope(Dispatchers.IO).launch {
             val pdfEntity = surveyData
@@ -226,7 +222,6 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                     Toast.makeText(requireActivity(), "PDF file not found", Toast.LENGTH_SHORT).show()
                     return@withContext
                 }
-
                 val uri = FileProvider.getUriForFile(requireActivity(),
                     "${requireActivity().applicationContext.packageName}.provider",
                     File(pdfEntity.filePath)
@@ -240,8 +235,9 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
     }
     override fun onClick(v: View?) {
         when(v?.id){
-            R.id.back_arrow->{    findNavController().navigateUp()}
-
+            R.id.back_arrow->{
+                findNavController().navigateUp()
+            }
         }
     }
     fun createWfsUpdateXml(synItem: SurveyData, s3Url: String): String {
@@ -374,7 +370,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                 }
                 is NetworkSealed.Data->{
                     val response = it.data
-                    Toast.makeText(requireContext(), "Report Updated: ${response!!.Message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "${response!!.Message}", Toast.LENGTH_SHORT).show()
                 }
                 is NetworkSealed.Error->{
                     showToast(it.message)
@@ -382,6 +378,5 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
-
 
 }

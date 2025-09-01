@@ -17,6 +17,7 @@ import com.example.land_parcel.R
 import com.example.land_parcel.Utils.BaseFragment
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.PrefManager
+import com.example.land_parcel.Utils.SessionManager
 import com.example.land_parcel.databinding.DialogConfirmationBinding
 import com.example.land_parcel.databinding.DialogOfflinerBinding
 import com.example.land_parcel.databinding.DialogResponseLoginBinding
@@ -61,7 +62,6 @@ class LoginFragment : BaseFragment() {
                     return@setOnClickListener
                 } else {
                     viewmodel.encryptData(binding.username.text.toString(),binding.password.text.toString())
-
                     CoroutineScope(Dispatchers.IO).launch {
                         viewmodel.getLogin(viewmodel.encodedUsername, viewmodel.encodedPassword,"Mobile")
                     }
@@ -83,6 +83,7 @@ class LoginFragment : BaseFragment() {
                  is NetworkSealed.Data->{
                      binding.progressCircular.progressCircular.visibility = View.GONE
                      val token: String = it.data?.token ?: ""
+                     SessionManager.saveSession(requireContext(), token)
                      val jwt = JWT(token)
                      val orgid: String = jwt.getClaim("OrganizationId").asString().toString()
                      val userId: String = jwt.getClaim("UserId").asString().toString()
@@ -113,6 +114,6 @@ class LoginFragment : BaseFragment() {
         }
 
     }
-    
+
 
 }

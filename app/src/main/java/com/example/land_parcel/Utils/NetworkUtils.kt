@@ -6,7 +6,6 @@ import javax.inject.Inject
 
 
 class NetworkUtils @Inject constructor(private val context: Context) {
-
     fun isNetworkConnectionAvailable(): Boolean {
         var haveConnectedWifi = false
         var haveConnectedMobile = false
@@ -26,5 +25,4 @@ class NetworkUtils @Inject constructor(private val context: Context) {
         }
         return haveConnectedWifi || haveConnectedMobile
     }
-
 }
