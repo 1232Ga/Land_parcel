@@ -400,7 +400,6 @@ open class BaseFragment :Fragment() {
         return try {
             val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
             parser.timeZone = TimeZone.getTimeZone("UTC")
-
             val date = parser.parse(isoDate)
             val formatter = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.US)
             formatter.format(date ?: return "Date not available")
@@ -416,6 +415,10 @@ open class BaseFragment :Fragment() {
         return formatter.format(date)
     }
 
+    fun isValidPasswordchange(password: String): Boolean {
+        val passwordPattern = Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=!]).{8,}\$")
+        return passwordPattern.containsMatchIn(password)
+    }
 
 
 }

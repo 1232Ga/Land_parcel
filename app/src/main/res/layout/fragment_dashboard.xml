@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/swipeRefreshLayout"
     tools:context=".View.Fragment.DashboardFragment">
-
-     <include layout="@layout/toolbar_header"
-         android:id="@+id/toolbar"/>
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/toolbar_header"
+        android:id="@+id/toolbar"/>
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar" />
-
     <LinearLayout
         android:layout_width="@dimen/_200dp"
         android:layout_height="@dimen/_90dp"
@@ -39,18 +40,16 @@
             android:background="@drawable/transparent_light_bg"
             />
     </LinearLayout>
-
     <ImageView
         android:id="@+id/btn_layer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_65dp"
+        android:layout_height="@dimen/_65dp"
         android:layout_below="@+id/toolbar"
         android:layout_alignParentEnd="true"
         android:elevation="@dimen/_5dp"
         android:layout_marginEnd="@dimen/_10dp"
         android:layout_marginTop="@dimen/_50dp"
         android:src="@drawable/ic_layer" />
-
     <ImageView
         android:id="@+id/legend_img"
         android:layout_width="wrap_content"
@@ -61,20 +60,18 @@
         android:elevation="@dimen/_5dp"
         android:src="@drawable/legends"
         android:visibility="gone" />
-
     <ImageView
         android:id="@+id/legend_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_65dp"
+        android:layout_height="@dimen/_65dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:elevation="@dimen/_5dp"
         android:src="@drawable/ic_legends" />
-
     <ImageView
         android:id="@+id/btn_map_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_65dp"
+        android:layout_height="@dimen/_65dp"
         android:layout_below="@+id/btn_layer"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="-15dp"
@@ -83,8 +80,8 @@
         android:src="@drawable/ic_street" />
     <ImageView
         android:id="@+id/btn_ortho_loc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_65dp"
+        android:layout_height="@dimen/_65dp"
         android:layout_below="@+id/btn_map_type"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="-15dp"
@@ -187,7 +184,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1dp"
                 android:layout_marginStart="@dimen/_10dp"
-android:visibility="gone"
+                android:visibility="gone"
                 android:background="@color/view_line" />
 
             <CheckBox
@@ -212,7 +209,6 @@ android:visibility="gone"
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
     <ImageView
         android:id="@+id/btnToggleMap"
         android:layout_width="@dimen/_50dp"
@@ -225,7 +221,6 @@ android:visibility="gone"
         android:padding="@dimen/_10dp"
         android:src="@drawable/baseline_map_24"
         android:visibility="gone" />
-
     <ImageView
         android:id="@+id/btnToggleTile"
         android:layout_width="@dimen/_50dp"
@@ -239,7 +234,6 @@ android:visibility="gone"
         android:padding="@dimen/_10dp"
         android:src="@drawable/ic_checkbox_checked"
         android:visibility="gone" />
-
     <androidx.cardview.widget.CardView
         android:id="@+id/map_view_card"
         android:layout_width="match_parent"
@@ -296,20 +290,20 @@ android:visibility="gone"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:orientation="vertical">
 
-                   <RelativeLayout
-                       android:id="@+id/street_rel"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:paddingHorizontal="@dimen/_3dp"
-                       >
-                       <ImageView
-                           android:id="@+id/img_street"
-                           android:layout_width="70dp"
-                           android:layout_height="70dp"
-                           android:gravity="center_vertical"
-                           android:layout_marginStart="0.5dp"
-                           android:src="@drawable/img_street" />
-                   </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/street_rel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="@dimen/_3dp"
+                        >
+                        <ImageView
+                            android:id="@+id/img_street"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="0.5dp"
+                            android:src="@drawable/img_street" />
+                    </RelativeLayout>
 
                     <TextView
                         android:id="@+id/img_street_text"
@@ -397,7 +391,7 @@ android:visibility="gone"
                         android:layout_marginTop="@dimen/_5dp"
                         android:fontFamily="@font/poppins_medium"
                         android:gravity="center"
-                        android:text="Tarrain"
+                        android:text="Terrain"
                         android:textColor="@color/primary_color"
                         android:textSize="@dimen/_12sp" />
                 </LinearLayout>
@@ -408,7 +402,6 @@ android:visibility="gone"
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
     <ImageView
         android:id="@+id/btnTogglelayer"
         android:layout_width="@dimen/_50dp"
@@ -422,7 +415,6 @@ android:visibility="gone"
         android:padding="@dimen/_10dp"
         android:src="@drawable/ic_checkbox_checked"
         android:visibility="gone" />
-
     <ImageView
         android:id="@+id/btnGetLocation"
         android:layout_width="@dimen/_50dp"
@@ -438,5 +430,8 @@ android:visibility="gone"
 
         android:visibility="gone" />
 
-
 </RelativeLayout>
+
+
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

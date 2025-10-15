@@ -54,7 +54,6 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: SyncViewModel by viewModels()
 
     var syncingDialog:Dialog?=null
-
     @Inject
     lateinit var prefManager: PrefManager
 
@@ -82,11 +81,9 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                 },
                 onImageClick = { position ->
                     imageUris = it[position].photos as MutableList<Uri>
-                    // showImageDialog(0)
                     showPDFDialog(it[position])
                 }
             )
-
             binding.syncRecycler.adapter = adapter
             if (it.isEmpty()) {
                 binding.mainLayout.visibility = View.GONE
@@ -112,6 +109,35 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
         }
         syncDialogBinding.btnCancel.setOnClickListener {
             dialog.dismiss()
+            val bundle = Bundle().apply {
+                putString("owner_name", syncItem.Owner)
+                putString("district_name", syncItem.DistName)
+                putInt("house_no", syncItem.HouseNo.toInt())
+                putString("block", syncItem.Block)
+                putString("land_type", syncItem.LandType)
+                putString("tehsil", syncItem.Tehsil)
+                putString("utility", "")
+                putString("mobile_no", syncItem.MobileNo)
+                putString("village_name", syncItem.VillName)
+                val villageIdWithoutHyphens = syncItem.Village_Id.replace("-", "")
+                val villname = syncItem.VillName.replace(" ", "")
+                putString("village_id", "${villname}$villageIdWithoutHyphens")
+                putInt("unique_code", syncItem.Khasra_No.toInt())
+                putString("featureid", syncItem.featureid)
+                putString("PNIL_No", "")
+                putString("remark", syncItem.Remark)
+                putString("govt_id", syncItem.GovtID)
+                putString("area", syncItem.Area)
+                putString("latitude", syncItem.Latitude)
+                putString("longitude", syncItem.Longitude)
+                putString("Father_na", syncItem.Father_na)
+                putString("User_name", syncItem.User_name)
+            }
+            findNavController().navigate(
+                R.id.action_syncFragment_to_updateFormFragment,
+                bundle
+            )
+
         }
     }
     private fun syncItem(synItem: SurveyData, position: Int) {
@@ -176,14 +202,56 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                    withContext(Dispatchers.Main){
                        adapter.removeItem(position)
                        showToast("Data sync successfully !")
-                       if(!synItem.fileName.isEmpty())
-                           viewModel.getReportUpdate(
-                               prefManager.getToken(),
-                               synItem.Khasra_No,
-                               prefManager.getVillageIDHypen(),
-                               3,
-                               getFormattedDateISO()
-                           )
+                       println(prefManager.getreportintiate())
+                       if(!synItem.fileName.isEmpty()){
+                           if(prefManager.getreportintiate().equals("Not Generate")){
+                               viewModel.getReportUpdate(
+                                   prefManager.getToken(),
+                                   synItem.Khasra_No,
+                                   prefManager.getVillageIDHypen(),
+                                   0,
+                                   getFormattedDateISO(),
+                                   synItem.Owner,
+                                   synItem.Father_na,
+                                   synItem.VillName,
+                                   synItem.DistName,
+                                   synItem.Tehsil,
+                                   synItem.GovtID,
+                                   synItem.LandType,
+                                   synItem.Area,
+                                   synItem.MobileNo,
+                                   prefManager.getPnil(),
+                                   synItem.HouseNo,
+                                   synItem.Block,
+                                   synItem.Remark
+                               )
+
+                           }
+                           else if(prefManager.getreportintiate().equals("Generate")){
+                               viewModel.getReportUpdate(
+                                   prefManager.getToken(),
+                                   synItem.Khasra_No,
+                                   prefManager.getVillageIDHypen(),
+                                   3,
+                                   getFormattedDateISO(),
+                                   synItem.Owner,
+                                   synItem.Father_na,
+                                   synItem.VillName,
+                                   synItem.DistName,
+                                   synItem.Tehsil,
+                                   synItem.GovtID,
+                                   synItem.LandType,
+                                   synItem.Area,
+                                   synItem.MobileNo,
+                                   prefManager.getPnil(),
+                                   synItem.HouseNo,
+                                   synItem.Block,
+                                   synItem.Remark
+                               )
+
+                           }
+                       }
+
 
                    }
                     viewModel.deleteSurveyDataByPlotId(synItem.Khasra_No)
@@ -204,6 +272,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
     }
     private fun getview() {
         binding.backArrow.setOnClickListener(this)
+        setoberevers()
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -211,9 +280,8 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                     findNavController().navigateUp()
                 }
             })
-        setoberevers()
-    }
 
+    }
     private fun showPDFDialog(surveyData: SurveyData) {
         CoroutineScope(Dispatchers.IO).launch {
             val pdfEntity = surveyData
@@ -241,10 +309,8 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
         }
     }
     fun createWfsUpdateXml(synItem: SurveyData, s3Url: String): String {
-
         val synItemFeatureId = synItem.featureid
         val updatedFeatureId = synItemFeatureId.replace("Polygon", "Changes")
-
         return """
         <wfs:Transaction service="WFS" version="1.1.0"
           xmlns:wfs="http://www.opengis.net/wfs"
@@ -309,13 +375,16 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
               <wfs:Value>${synItem.Father_na}</wfs:Value>
             </wfs:Property>
             
-         
+            <wfs:Property>
+             <wfs:Name>User_name</wfs:Name>
+              <wfs:Value>${synItem.User_name}</wfs:Value>
+            </wfs:Property>
+           
             <wfs:Property>
               <wfs:Name>Area</wfs:Name>
               <wfs:Value>${synItem.Area}</wfs:Value>
             </wfs:Property>
-            
-            
+    
             <wfs:Property>
               <wfs:Name>Latitude</wfs:Name>
               <wfs:Value>${synItem.Latitude}</wfs:Value>
@@ -345,7 +414,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
             
             <wfs:Property>
               <wfs:Name>document</wfs:Name>
-              <wfs:Value>$s3Url</wfs:Value>
+              <wfs:Value>${s3Url}</wfs:Value>
             </wfs:Property>
             
             <wfs:Property>
@@ -353,9 +422,7 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
               <wfs:Value>${synItem.Remark}
               </wfs:Value>
             </wfs:Property>
-            
-         
-   
+           
            <ogc:Filter>
               <ogc:FeatureId fid="${updatedFeatureId}"/>
             </ogc:Filter>

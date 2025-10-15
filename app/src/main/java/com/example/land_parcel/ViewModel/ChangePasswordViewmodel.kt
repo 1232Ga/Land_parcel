@@ -22,7 +22,6 @@ import com.google.gson.Gson
 
 @HiltViewModel
 class ChangePasswordViewmodel @Inject constructor(private val changepasswordRepo: ChangePasswordRepositories, private val prefManager: PrefManager):ViewModel() {
-
     val changeResponse=changepasswordRepo.changepassResponse
     var encodedoldPassword: String = ""
     var encodednewPassword: String = ""
@@ -50,10 +49,8 @@ class ChangePasswordViewmodel @Inject constructor(private val changepasswordRepo
             encodedoldPassword = encodedoldPassword.replace("[\n\r]".toRegex(), "")
             encodednewPassword = Base64.encodeToString(encryptednew, Base64.DEFAULT)
             encodednewPassword = encodednewPassword.replace("[\n\r]".toRegex(), "")
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 }

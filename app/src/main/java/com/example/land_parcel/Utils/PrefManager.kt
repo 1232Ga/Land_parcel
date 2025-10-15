@@ -1,11 +1,14 @@
 package com.example.land_parcel.Utils
 
 import android.content.Context
+import com.example.land_parcel.model.VillageModel.VillageItem
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 class PrefManager @Inject constructor(context: Context) {
     private val sharedPreferences=context.getSharedPreferences("LandParcelPred",Context.MODE_PRIVATE)
-
+    private val gson = Gson()
     companion object{
         private val IS_LOGIN="isLogin"
         private const val CLIENT_ID="clientId"
@@ -15,6 +18,7 @@ class PrefManager @Inject constructor(context: Context) {
         private const val GEO_JSON="geoJson"
         private const val PNIL_JSON="pnil"
         private const val VILLAGEIDHYPEN="villageIdhypen"
+        private const val REPORTINIATE="reportiniate"
 
     }
 
@@ -65,9 +69,7 @@ class PrefManager @Inject constructor(context: Context) {
         return sharedPreferences.getString(GEO_JSON, "{}")
     }
 
-    fun setPnil(pnil: String?) {
-        sharedPreferences.edit().putString(PNIL_JSON, pnil).apply()
-    }
+
 
     fun getVillageIDHypen(): String? {
         return sharedPreferences.getString(VILLAGEIDHYPEN, "")
@@ -76,8 +78,28 @@ class PrefManager @Inject constructor(context: Context) {
         sharedPreferences.edit().putString(VILLAGEIDHYPEN, VillageIDHypen).apply()
     }
 
+    fun setPnil(pnil: String?) {
+        sharedPreferences.edit().putString(PNIL_JSON, pnil).apply()
+    }
     fun getPnil(): String? {
         return sharedPreferences.getString(PNIL_JSON, "")
     }
 
+    fun setreportinitaite(reportintiate: String?) {
+        sharedPreferences.edit().putString(REPORTINIATE, reportintiate).apply()
+    }
+
+    fun getreportintiate(): String? {
+        return sharedPreferences.getString(REPORTINIATE, "Not Generate")
+    }
+    fun setVillageList(villageList: List<VillageItem>) {
+        val json = gson.toJson(villageList)
+        sharedPreferences.edit().putString("village_list", json).apply()
+    }
+
+    fun getVillageList(): List<VillageItem>? {
+        val json = sharedPreferences.getString("village_list", null)
+        return if (json.isNullOrEmpty()) null
+        else gson.fromJson(json, object : TypeToken<List<VillageItem>>() {}.type)
+    }
 }

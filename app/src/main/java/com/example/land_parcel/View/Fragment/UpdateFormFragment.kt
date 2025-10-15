@@ -63,6 +63,7 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
     private var Father_na = ""
     private var latitude = ""
     private var longitude = ""
+    private var User_name = ""
     private var selectedDocument = ""
     private lateinit var documentTypes: List<String>
 
@@ -131,12 +132,13 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
             binding.landUseEt.setText(bundle.getString("utility"))
             binding.tehsilName.text = bundle.getString("tehsil")
             binding.villageNameEt.text = bundle.getString("village_name")
-            binding.plotIdEt.setText(bundle.getInt("unique_code").toString())
+            binding.plotIdEt.setText(bundle.getString("unique_code"))
             Village_Id = bundle.getString("village_id").toString()
             featureid = bundle.getString("featureid").toString()
             PNIL_No = bundle.getString("PNIL_No").toString()
             latitude = bundle.getString("latitude").toString()
             longitude = bundle.getString("longitude").toString()
+            User_name = bundle.getString("User_name").toString()
             area = bundle.getString("area").toString()
             govt_id = bundle.getString("govt_id").toString()
             Father_na = bundle.getString("Father_na").toString()
@@ -206,6 +208,7 @@ class UpdateFormFragment : BaseFragment(), View.OnClickListener {
             PNIL_No,
             selectedDocument,
             Father_na,
+            User_name
         )
         viewmodel.updateSurveyData(surveyData)
         binding.progress.visibility = View.GONE

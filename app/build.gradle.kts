@@ -120,5 +120,6 @@ dependencies {
     implementation ("org.wololo:jts2geojson:0.18.1")
     implementation ("org.locationtech.jts:jts-core:1.18.2")
 
-
+   //Refresh Layout
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

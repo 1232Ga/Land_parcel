@@ -32,9 +32,7 @@ class ChangePasswordFragment : BaseFragment(), View.OnClickListener {
 
     private val viewmodel:ChangePasswordViewmodel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         bindinguser = FragmentChangePasswordBinding.inflate(inflater, container, false)
         val view = bindings.root
         getview()
@@ -55,13 +53,18 @@ class ChangePasswordFragment : BaseFragment(), View.OnClickListener {
             R.id.back_arrow->{ findNavController().navigateUp()}
             R.id.change_pass_btn->{
                if(networkUtils.isNetworkConnectionAvailable()){
-                   val oldPassword: String = bindings.oldPassword.text.toString().trim { it <= ' ' }
-                   val newPassword: String = bindings.newPassword.text.toString().trim { it <= ' ' }
-                   val confirmPassword: String = bindings.confPassword.text.toString().trim { it <= ' ' }
+                   val oldPassword = bindings.oldPassword.text.toString().trim()
+                   val newPassword = bindings.newPassword.text.toString().trim()
+                   val confirmPassword = bindings.confPassword.text.toString().trim()
                    if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-                       Toast.makeText(requireActivity(), "All fields are required", Toast.LENGTH_LONG).show()
-                   }else if (newPassword != confirmPassword) {
-                       Toast.makeText(requireActivity(), "New password and Re-enter password do not match.", Toast.LENGTH_SHORT).show()
+                       Toast.makeText(requireActivity(),
+                           getString(R.string.all_required), Toast.LENGTH_LONG).show()
+                   } else if (newPassword != confirmPassword) {
+                       Toast.makeText(requireActivity(),
+                           getString(R.string.new_password_and_re_enter_password), Toast.LENGTH_SHORT).show()
+                   } else if (!isValidPasswordchange(newPassword)) {
+                       Toast.makeText(requireActivity(),
+                           getString(R.string.charcter_length), Toast.LENGTH_LONG).show()
                    }else{
                        viewmodel.encryptData(oldPassword,newPassword)
                        lifecycleScope.launch {

@@ -3,7 +3,6 @@ package com.example.land_parcel.model.survey
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
 @Entity
 data class SurveyData(
     val Block: String,
@@ -29,4 +28,5 @@ data class SurveyData(
     var PNIL_No: String,
     var GovtID: String,
     var Father_na: String,
+    var User_name:String
 )

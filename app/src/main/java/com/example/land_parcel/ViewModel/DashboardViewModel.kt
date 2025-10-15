@@ -75,6 +75,15 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
         getVillageResponse(prefManager.getToken()!!,prefManager.getUserId()!!)
     }
 }
+    fun refreshVillageList(token:String,userID:String) {
+        viewModelScope.launch {
+            //isVillageDataLoaded = false   // reset flag before fetch
+            getVillageResponse(token, userID)
+        }
+    }
+
+
+
     suspend fun getSurveyData(){
         repository.getSurveyData()
     }
@@ -125,7 +134,6 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
 
 
     }
-
     fun extractVectorBBOX(jsonString: String?): LatLngBounds? {
         jsonString?.let {
             try {
@@ -185,7 +193,6 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
             }
         }
     }
-
     suspend fun fetchChangesJson(url: String,villageId:String,context: Context): String? {
         return withContext(Dispatchers.IO) {
             try {
@@ -227,7 +234,6 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
             }
         }
     }
-
     suspend fun fetchGeoJson(url: String,villageId:String,context: Context): String {
         return withContext(Dispatchers.IO) {
             try {
@@ -259,7 +265,6 @@ class DashboardViewModel @Inject constructor(private val repository: DashboardRe
             }
         }
     }
-
     private fun saveJsonToFile(context: Context, json: String, fileName: String): String {
         val file = File(context.filesDir, "$fileName.json")
         file.writeText(json, Charsets.UTF_8)

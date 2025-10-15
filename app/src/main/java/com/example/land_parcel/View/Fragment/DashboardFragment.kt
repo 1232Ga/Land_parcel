@@ -13,6 +13,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.net.ConnectivityManager
@@ -91,6 +92,9 @@ import com.mapbox.mapboxsdk.style.sources.TileSet
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -104,8 +108,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     private lateinit var bindingAnalytics: FragmentDashboardBinding
     private val bindings get() = bindingAnalytics
     private val viewmodel:DashboardViewModel by viewModels()
-
-    // private val viewmodelpnil:MyViewModel by viewModels()
+   // private var previousVillageIds: MutableSet<String> = mutableSetOf()
+   // private val viewmodelpnil:MyViewModel by viewModels()
     @Inject
     lateinit var prefManager: PrefManager
     @Inject
@@ -114,9 +118,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     lateinit var landDatabase: LandDatabase
     private var syncingDialog: Dialog? = null
     private var progressDialog: Dialog? = null
-
     private var response: LandParcel? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token))
@@ -126,7 +128,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         val view = bindings.root
         return view
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getview()
@@ -136,28 +137,49 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         requireActivity().registerReceiver(this.mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         bindings.mapView.getMapAsync(this)
         viewmodel.locationEngine = LocationEngineProvider.getBestLocationEngine(requireActivity())
-        bindings.btnToggleMap.setOnClickListener(this)
-        bindings.btnToggleTile.setOnClickListener(this)
-        bindings.btnTogglelayer.setOnClickListener(this)
-        bindings.btnGetLocation.setOnClickListener(this)
-        bindings.toolbar.profileView.setOnClickListener(this)
-        bindings.btnMapType.setOnClickListener(this)
-        bindings.btnLayer.setOnClickListener(this)
-        bindings.closeLayer.setOnClickListener(this)
-        bindings.closeMapType.setOnClickListener(this)
-        bindings.parcelLayer.setOnClickListener(this)
-        bindings.geoJsonLayer.setOnClickListener(this)
-        bindings.plotIdLayer.setOnClickListener(this)
-        bindings.surveyedPlotLayer.setOnClickListener(this)
-        bindings.remainingPlotLayer.setOnClickListener(this)
-        bindings.terrainBtn.setOnClickListener(this)
-        bindings.satelliteBtn.setOnClickListener(this)
-        bindings.streetBtn.setOnClickListener(this)
-        bindings.btnMapType.setOnClickListener(this)
-        bindings.legendBtn.setOnClickListener(this)
-        bindings.toolbar.syncView.setOnClickListener(this)
-        bindings.currentLocBtn.setOnClickListener(this)
-        bindings.btnOrthoLoc.setOnClickListener(this)
+
+        bindings.apply {
+            listOf(
+                btnTogglelayer, btnGetLocation, toolbar.profileView, btnMapType,
+                btnLayer, closeLayer, closeMapType, parcelLayer, geoJsonLayer,
+                plotIdLayer, surveyedPlotLayer, remainingPlotLayer,
+                terrainBtn, satelliteBtn,streetBtn,btnMapType,legendBtn,toolbar.syncView,
+                currentLocBtn,btnOrthoLoc
+            ).forEach { it.setOnClickListener(this@DashboardFragment) }
+        }
+        bindings.swipeRefreshLayout.setOnRefreshListener {
+            lifecycleScope.launch {
+                if (networkUtils.isNetworkConnectionAvailable()) {
+                    viewmodel.refreshVillageList(prefManager.getToken()!!,prefManager.getUserId()!!)
+                } else {
+                    Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
+                    bindings.swipeRefreshLayout.isRefreshing = false
+                }
+            }
+        }
+//        bindings.streetBtn.setOnClickListener(this)
+//        bindings.btnMapType.setOnClickListener(this)
+//        bindings.legendBtn.setOnClickListener(this)
+//        bindings.toolbar.syncView.setOnClickListener(this)
+//        bindings.currentLocBtn.setOnClickListener(this)
+//        bindings.btnOrthoLoc.setOnClickListener(this)
+//        bindings.btnToggleMap.setOnClickListener(this)
+//        bindings.btnToggleTile.setOnClickListener(this)
+//        bindings.btnTogglelayer.setOnClickListener(this)
+//        bindings.btnGetLocation.setOnClickListener(this)
+//        bindings.toolbar.profileView.setOnClickListener(this)
+//        bindings.btnMapType.setOnClickListener(this)
+//        bindings.btnLayer.setOnClickListener(this)
+//        bindings.closeLayer.setOnClickListener(this)
+//        bindings.closeMapType.setOnClickListener(this)
+//        bindings.parcelLayer.setOnClickListener(this)
+//        bindings.geoJsonLayer.setOnClickListener(this)
+//        bindings.plotIdLayer.setOnClickListener(this)
+//        bindings.surveyedPlotLayer.setOnClickListener(this)
+//        bindings.remainingPlotLayer.setOnClickListener(this)
+//        bindings.terrainBtn.setOnClickListener(this)
+//        bindings.satelliteBtn.setOnClickListener(this)
+
         bindings.streetRel.background = ContextCompat.getDrawable(requireContext(), R.drawable.map_view_bg)
         bindings.satelliteRel.background = null
         bindings.terrainRel.background = null
@@ -245,6 +267,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         if (!villageId.isNullOrEmpty() && !khasraNumber.isNullOrEmpty()) {
             viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, token)
         }
+       // viewmodel.refreshVillageList(token,prefManager.getUserId()!!)
+        //startVillageListAutoRefresh()
 
     }
     private fun setMapStyleAndWMS(mapboxMap: MapboxMap, styleUrl: String) {
@@ -266,11 +290,9 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 viewmodel.getSurveyData()
             }
             CoroutineScope(Dispatchers.Main).launch {
-
                 if (style.isFullyLoaded) {
                     addGeoJsonLayer(style)
                 }
-
             }
             updateTileVisibility(style)
         }
@@ -318,15 +340,10 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
             val textColor = if (isDarkModeEnabled()) R.color.white else R.color.primary_color_line
             val symbolLayer = SymbolLayer("polygon-label-layer", "polygon-source").withProperties(
-                PropertyFactory.textField(Expression.get("Khasra_No")),
+                PropertyFactory.textField(Expression.toString(Expression.get("Khasra_No"))),
                 PropertyFactory.textSize(14f),
                 PropertyFactory.textColor(ContextCompat.getColor(requireActivity(), textColor)),
-                PropertyFactory.textHaloColor(
-                    ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.white
-                    )
-                ), // Outline for readability
+                PropertyFactory.textHaloColor(ContextCompat.getColor(requireActivity(), R.color.white)), // Outline for readability
                 PropertyFactory.textHaloWidth(1f),
                 PropertyFactory.textJustify(Property.TEXT_JUSTIFY_AUTO),
                 PropertyFactory.textAnchor(Property.TEXT_ANCHOR_CENTER),
@@ -337,27 +354,30 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         }
     }
     private fun isDarkModeEnabled(): Boolean {
-        return (requireContext().resources.configuration.uiMode and
-                Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        return (requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     }
     private fun setObservers() {
         try {
+            //old code that is not refresh automatically but working fine
             viewmodel.villageResponse.observe(viewLifecycleOwner) {
                 when (it) {
                     is NetworkSealed.Loading -> {
+                        bindings.swipeRefreshLayout.isRefreshing = true
                         //binding.progressCircular.progressCircular.visibility = View.VISIBLE
                     }
-
                     is NetworkSealed.Data -> {
+                        bindings.swipeRefreshLayout.isRefreshing = false
                         var villageList = it.data?.map { village ->
-                            VillageItem(village.VillageId, village.VillageName) } ?: emptyList()
+                            VillageItem(village.VillageId, village.VillageName)
+                        } ?: emptyList()
                         villageList = villageList.asReversed()
                         if (villageList.isEmpty()) {
                             villageList = listOf(VillageItem("VillageId", "Select Village"))
                         }
                         resetLayerVisibility()
                         CoroutineScope(Dispatchers.IO).launch {
-                            if (networkUtils.isNetworkConnectionAvailable() && !viewmodel.isVillageDataLoaded) {
+                            if (networkUtils.isNetworkConnectionAvailable()) {
+                               // viewmodel.isVillageDataLoaded = true
                                 for (i in 0..villageList.lastIndex) {
                                     prefManager.setVillageIDHypen(villageList[i].villageId)
                                     val villageIdWithoutHyphens = villageList[i].villageId.replace("-", "")
@@ -368,7 +388,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                                     viewmodel.fetchGeoJson(WMTS_SOURCE_POLYGON_URL, tempVillageId, requireActivity())
                                     viewmodel.fetchBBOXJson(BBOX_LAYER, tempVillageId)
                                 }
-                                viewmodel.isVillageDataLoaded = true
+
                             }
                             withContext(Dispatchers.Main) {
                                 val adapter: ArrayAdapter<*> = ArrayAdapter<Any?>(requireActivity(), R.layout.spinneritemback, villageList)
@@ -408,13 +428,13 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                             }
                         }
                     }
-
                     is NetworkSealed.Error -> {
-                        showToast(it.message)
+                        bindings.swipeRefreshLayout.isRefreshing = false
+                       //showToast(it.message)
                     }
                 }
             }
-            viewmodel.surveyData.observe(this) { surveyDataList ->
+            viewmodel.surveyData.observe(viewLifecycleOwner) { surveyDataList ->
                 val style = viewmodel.maMap?.style
                 lifecycleScope.launch {
 
@@ -427,10 +447,8 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     }
 
                     //   val storedChangesGeoJson = villageJsonDao.getVillageGeoJsonById(Village_Id)?.changesJson?:""
-
                     // Start building the switchCase expression dynamically
                     val conditions = mutableListOf<Expression>()
-
                     for (item in surveyDataList) {
                         if (storedGeoJson.contains(item.Khasra_No)) {
                             conditions.add(
@@ -439,8 +457,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                                     Expression.literal(item.Khasra_No.toIntOrNull() ?: item.Khasra_No)
                                 )
                             )
-                            conditions.add(
-                                Expression.color(
+                            conditions.add(Expression.color(
                                     ContextCompat.getColor(requireActivity(), R.color.survey_color)
                                 )
                             )
@@ -467,8 +484,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                         )
                     }
                     val blockChangesColorExpression = Expression.color(ContextCompat.getColor(requireActivity(), R.color.green))
-
-
                     if (style?.isFullyLoaded == true) {
                         val existingLayer = style.getLayer("polygon-layer") as? FillLayer
                         val existingChangesLayer = style.getLayer("changes-layer") as? FillLayer
@@ -510,6 +525,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             viewmodel.parcelReport.observe(viewLifecycleOwner) { result ->
                 result.onSuccess { landParcel ->
                     response = landParcel
+
                     if (landParcel != null) {
                         prefManager.setPnil(landParcel.PnilNo)
                     } else {
@@ -527,6 +543,17 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
 
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    //Click work on only intergar part code snippet
+
     private fun gsonClickListener(mapboxMap: MapboxMap) {
         mapboxMap.addOnMapClickListener { point ->
             val screenPoint = mapboxMap.projection.toScreenLocation(point)
@@ -553,12 +580,10 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 //        viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, "Bearer "+prefManager.getToken())
 
         val villageId = viewmodel.selectedVillage?.villageId
-        val khasraNumber = properties?.get("Khasra_No").getAsSafeString()
+        val khasraNumber = feature.getStringProperty("Khasra_No")
+       // val khasraNumber = properties?.get("Khasra_No").getAsSafeString()
         viewmodel.lastKhasraNumber = khasraNumber
         viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, "Bearer " + prefManager.getToken())
-
-
-
         val featureId = feature.id() ?: "Unknown"
         val geometryJson = feature.geometry()?.toJson()
         if (geometryJson.isNullOrEmpty()) {
@@ -586,7 +611,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 bindings.parcelLayer.text = viewmodel.selectedVillage?.villageName
                 val villname = viewmodel.selectedVillage?.villageName?.replace(" ", "")
                 putString("village_id", "${villname}$villageIdWithoutHyphens")
-                putInt("unique_code", properties?.get("Khasra_No").getAsSafeInt(-1))
+                putString("unique_code", khasraNumber)
                 putString("featureid", featureId)
                 putString("PNIL_No", encodedPoint)
                 putString("remark", properties?.get("remark").getAsSafeString())
@@ -595,11 +620,12 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 putString("latitude", properties?.get("Latitude").getAsSafeString())
                 putString("longitude", properties?.get("Longitude").getAsSafeString())
                 putString("Father_na", properties?.get("Father_na").getAsSafeString())
+                putString("User_name", properties?.get("User_name").getAsSafeString())
             }
 
             updateDialog(
                 bundle, properties?.get("Block").getAsSafeString("Unknown"),
-                properties?.get("Khasra_No").getAsSafeInt(-1),
+                properties?.get("Khasra_No").getAsSafeString(),
                 properties?.get("VillName").getAsSafeString(), s, feature
             )
 
@@ -613,7 +639,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     private fun JsonElement?.getAsSafeInt(defaultValue: Int = -1): Int {
         return if (this != null && !this.isJsonNull) this.asInt else defaultValue
     }
-    private fun updateDialog(bundle: Bundle, blockName: String, khasraNo: Int, ownerName: String, layers_type: String, feature: Feature) {
+    private fun updateDialog(bundle: Bundle, blockName: String, khasraNo: String, ownerName: String, layers_type: String, feature: Feature) {
         val updateSurveyBinding: DialogConfirmationBinding =
             DialogConfirmationBinding.inflate(layoutInflater)
         val dialog = Dialog(requireActivity())
@@ -626,7 +652,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         dialog.window?.attributes = layoutParams
         dialog.show()
         updateSurveyBinding.bloackName.text = "Block: $blockName"
-        updateSurveyBinding.plotNoNew.text = khasraNo.toString()
+        updateSurveyBinding.plotNoNew.text = khasraNo
         updateSurveyBinding.ownersName.text = ownerName
 
 
@@ -635,7 +661,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         if (layers_type.equals("Polygon_layer")) {
 
             if (networkUtils.isNetworkConnectionAvailable()) {
-                updateSurveyBinding.genrateReport.visibility = View.VISIBLE
+                updateSurveyBinding.genrateReport.visibility = View.GONE
                 updateSurveyBinding.genrateReport.setOnClickListener {
                     dialog.dismiss()
                     response?.let { response->
@@ -656,7 +682,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         else if (layers_type.equals("Changes_layer")) {
 
             if (networkUtils.isNetworkConnectionAvailable()) {
-                updateSurveyBinding.genrateReport.visibility = View.VISIBLE
+                updateSurveyBinding.genrateReport.visibility = View.GONE
                 updateSurveyBinding.genrateReport.setOnClickListener {
                     dialog.dismiss()
                     response?.let { response->
@@ -749,32 +775,32 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 pnil_no = response.PnilNo.toString(),
                 house_no = properties?.get("HouseNo").getAsSafeString(),
                 block = properties?.get("Block").getAsSafeString("Unknown"),
-                land_parcel_updated_on = getFormattedDateISO()
-            )
+                land_parcel_updated_on = getFormattedDateISO())
             val gson = Gson()
             val requestJson = gson.toJson(request)
             Log.d("RequestJSON", requestJson)
-
-            RetrofitClientReportIntiate.apiService.uploadParcelReport("Bearer "+prefManager.getToken(),request).enqueue(object :
-                Callback<ReportResponse> {
+            RetrofitClientReportIntiate.apiService.uploadParcelReport("Bearer "+prefManager.getToken(),request)
+                .enqueue(object : Callback<ReportResponse> {
                 override fun onResponse(call: Call<ReportResponse>, response: Response<ReportResponse>) {
                     if (response.isSuccessful) {
                         val result = response.body()
+                        prefManager.setreportinitaite("Generate")
                         Toast.makeText(context, "${result?.Message}", Toast.LENGTH_SHORT).show()
                     } else {
+                        prefManager.setreportinitaite("Not Generate")
                         Toast.makeText(context, "Failed: ${response.code()}", Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 override fun onFailure(call: Call<ReportResponse>, t: Throwable) {
+                    prefManager.setreportinitaite("Not Generate")
                     Toast.makeText(context, "Error: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
                 }
             })
         }
         syncDialogBinding.ReportDownloaded.setOnClickListener {
             syncingDialog?.dismiss()
-            val fileUrl = reportlink  // S3 URL
-            val timestamp = System.currentTimeMillis()  // Or use server timestamp if available
+            val fileUrl = reportlink
+            val timestamp = System.currentTimeMillis()
             val fileName = "survey_${properties?.get("Khasra_No").getAsSafeString()}_$timestamp.pdf"
             downloadFile(requireContext(), fileUrl, fileName)
         }
@@ -801,14 +827,13 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 //            syncingDialog?.dismiss()
 //        }
     }
+
     fun getFormattedDate(): String {
         val date = Date() // current date/time
         val formatter = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.UK)
         formatter.timeZone = TimeZone.getTimeZone("UTC") // or TimeZone.getDefault() if needed
         return formatter.format(date)
     }
-
-
     private fun generateReport(feature: Feature) {
         val properties = feature.properties()
         val geometryJson = feature.geometry()?.toJson()
@@ -867,6 +892,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
         }
     }
+
 
     private var downloadId: Long = 0
     private var progressDialogPercentage: ProgressDialog? = null

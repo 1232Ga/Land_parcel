@@ -1,7 +1,9 @@
 package com.example.land_parcel.model.login
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginRequest(
-    val username: String,
-    val password: String,
-    val Logintype:String
+    @SerializedName("userName") val userName: String,
+    @SerializedName("password") val password: String,
+    @SerializedName("logintype") val loginType: String
 )

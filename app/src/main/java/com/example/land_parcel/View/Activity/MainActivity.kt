@@ -20,12 +20,13 @@ class MainActivity : BaseClass() {
         super.onCreate(savedInstanceState)
         fullScreen()
         setContentView(R.layout.activity_main)
+
         requestPermission()
         checkSession()
     }
     override fun onResume() {
         super.onResume()
-        checkSession()
+        //checkSession()
     }
     private fun checkSession() {
         val loginTime = SessionManager.getLoginTime(this)

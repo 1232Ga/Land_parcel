@@ -13,7 +13,9 @@ import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
 import android.util.Base64
+import android.util.Log
 import com.example.land_parcel.Utils.Constants.PUBLIC_KEY
+import com.google.gson.Gson
 
 @HiltViewModel
 class LoginViewmodel @Inject constructor(private val loginRepositories: LoginRepositories,
@@ -58,6 +60,9 @@ class LoginViewmodel @Inject constructor(private val loginRepositories: LoginRep
 
     suspend fun getLogin(userName: String, password: String,logintype : String) {
         val loginRequest = LoginRequest(userName, password,logintype)
+        val gson = Gson()
+        val jsonString = gson.toJson(loginRequest)
+        Log.d("DEBUG", "JSON = $jsonString")
         loginRepositories.login(loginRequest)
 
     }

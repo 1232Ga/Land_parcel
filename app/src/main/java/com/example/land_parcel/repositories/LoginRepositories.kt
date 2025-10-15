@@ -1,5 +1,6 @@
 package com.example.land_parcel.repositories
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.land_parcel.Utils.NetworkUtils
@@ -18,14 +19,36 @@ class LoginRepositories @Inject constructor(@LandQualifiers.BaseRetrofit private
 
     suspend fun login(loginRequest: LoginRequest){
         if(networkUtils.isNetworkConnectionAvailable()){
-            _loginResponse.postValue(NetworkSealed.Loading())
-            val result=apiService.getLogin(loginRequest)
-            if(result.isSuccessful && result.code()==200 && result.body()!=null){
-                _loginResponse.postValue(NetworkSealed.Data(result.body()))
-
-            }else{
-                _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+            try {
+                _loginResponse.postValue(NetworkSealed.Loading())
+                val result=apiService.getLogin(loginRequest)
+                if(result.code()==200){
+                    if(result.isSuccessful && result.body()!=null){
+                        _loginResponse.postValue(NetworkSealed.Data(result.body()))
+                    }
+                }
+                else if(result.code()==401){
+                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                }
+                else if(result.code()==403){
+                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                }
+                else if(result.code()==404){
+                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                }
+                else if(result.code()==405){
+                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                }
+                else if(result.code()==500){
+                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                }
+                else{
+                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                }
+            }catch (e: Exception) {
+                _loginResponse.postValue(NetworkSealed.Error(null, e.message ?: "Unknown error"))
             }
+
         }
         else{
             _loginResponse.postValue(NetworkSealed.Error(null, "Internet not available!!"))

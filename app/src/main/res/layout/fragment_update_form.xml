@@ -287,10 +287,9 @@
 
                 <TextView
                     android:id="@+id/block_name_et"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@null"
+                    android:background="@drawable/ic_box_disable"
                     android:drawablePadding="@dimen/_5pt"
                     android:fontFamily="@font/poppins_regular"
                     android:imeOptions="actionNext"
@@ -333,7 +332,7 @@
                     android:textColor="@color/red"
                     android:textSize="@dimen/_16sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
 
             </LinearLayout>
@@ -346,10 +345,9 @@
 
                 <TextView
                     android:id="@+id/district_name"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@null"
+                    android:background="@drawable/ic_box_disable"
                     android:drawablePadding="@dimen/_5pt"
                     android:fontFamily="@font/poppins_regular"
                     android:imeOptions="actionNext"
@@ -451,7 +449,7 @@
                     android:textColor="@color/red"
                     android:textSize="@dimen/_16sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
 
             </LinearLayout>
@@ -464,10 +462,9 @@
 
                 <TextView
                     android:id="@+id/land_type_et"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@null"
+                    android:background="@drawable/ic_box_disable"
                     android:gravity="center_vertical"
                     android:drawablePadding="@dimen/_5pt"
                     android:fontFamily="@font/poppins_regular"
@@ -597,6 +594,9 @@
                     app:hintAnimationEnabled="true"
                     app:passwordToggleEnabled="false" />
             </LinearLayout>
+
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -882,6 +882,16 @@
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/_16sp"
                     android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_4dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:text="@string/asterisk"
+                    android:textAlignment="center"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold" />
 
 
             </LinearLayout>
@@ -894,10 +904,9 @@
 
                 <TextView
                     android:id="@+id/tehsil_name"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@null"
+                    android:background="@drawable/ic_box_disable"
                     android:drawablePadding="@dimen/_5pt"
                     android:fontFamily="@font/poppins_regular"
                     android:imeOptions="actionNext"
@@ -953,10 +962,9 @@
 
                 <TextView
                     android:id="@+id/village_name_et"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@null"
+                    android:background="@drawable/ic_box_disable"
                     android:drawablePadding="@dimen/_5pt"
                     android:fontFamily="@font/poppins_regular"
                     android:imeOptions="actionNext"
@@ -1011,10 +1019,9 @@
 
                 <EditText
                     android:id="@+id/plot_id_et"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@null"
+                    android:background="@drawable/ic_box_disable"
                     android:drawablePadding="@dimen/_5pt"
                     android:fontFamily="@font/poppins_regular"
                     android:imeOptions="actionNext"

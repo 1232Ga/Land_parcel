@@ -12,7 +12,7 @@ import com.example.land_parcel.model.VillageModel.Village
 import com.example.land_parcel.model.survey.SurveyData
 import com.example.land_parcel.model.villageGeoJson.VillageGeoJson
 
-@Database(entities = [SurveyData::class, Village::class,VillageGeoJson::class], version = 5 )
+@Database(entities = [SurveyData::class, Village::class,VillageGeoJson::class], version = 7 )
 @TypeConverters(PhotoUriConvertor::class)
 //@TypeConverters(PhotoByteConvertor::class)
 abstract class LandDatabase : RoomDatabase() {

@@ -198,7 +198,8 @@ class SurveyorHistoryFragment : BaseFragment(), View.OnClickListener,
                         fileName = properties.getAsSafeString("fileName"),
                         PNIL_No = properties.getAsSafeString("PNIL_No"),
                         GovtID = properties.getAsSafeString("GovtID"),
-                        Father_na = properties.getAsSafeString("Father_na")
+                        Father_na = properties.getAsSafeString("Father_na"),
+                        User_name = properties.getAsSafeString("User_name")
                     )
                 }
 

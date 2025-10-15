@@ -185,7 +185,11 @@
         android:id="@+id/syncFragment"
         android:name="com.example.land_parcel.View.Fragment.SyncFragment"
         android:label="fragment_sync"
-        tools:layout="@layout/fragment_sync" />
+        tools:layout="@layout/fragment_sync" >
+        <action
+            android:id="@+id/action_syncFragment_to_updateFormFragment"
+            app:destination="@id/updateFormFragment" />
+    </fragment>
     <fragment
         android:id="@+id/surveyorFragment"
         android:name="com.example.land_parcel.View.Fragment.SurveyorHistoryFragment"

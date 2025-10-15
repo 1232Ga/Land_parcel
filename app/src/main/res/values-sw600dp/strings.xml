@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="plot_no">Plot No</string>
+    <string name="all_required">All fields are required</string>
+    <string name="new_password_and_re_enter_password">New password and Re-enter password do not match.</string>
+    <string name="charcter_length">Password must be at least 8 characters and include uppercase, lowercase, digit, and special character.</string>
 </resources>

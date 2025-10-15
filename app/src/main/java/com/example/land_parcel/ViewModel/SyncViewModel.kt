@@ -39,8 +39,12 @@ class SyncViewModel @Inject constructor(private val repository: SyncRepository) 
         return repository.deleteSurveyById(plotId)
     }
 
-    suspend fun getReportUpdate(token:String?,khasra_number:String,village_id:String?,status:Int,date:String){
-        val reportRequest = ReportRequest(khasra_number,village_id,status,date)
+    suspend fun getReportUpdate(token:String?,khasra_number:String,village_id:String?,status:Int,date:String,
+                                owner:String,father_name:String,village_name:String,
+                                district_name:String,tehsil:String,govt_id:String,
+                                land_type:String,area:String,mobile_no:String,pnil_no:String?,
+                                house_no:String,block:String,remark:String){
+        val reportRequest = ReportRequest(khasra_number,village_id,status,date,owner,father_name,village_name,district_name,tehsil,govt_id,land_type,area,mobile_no,pnil_no,house_no,block,remark)
         val gson = Gson()
         val json = gson.toJson(reportRequest)
         println(json)

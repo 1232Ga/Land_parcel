@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
 import com.example.land_parcel.R
@@ -65,6 +66,10 @@ class LoginFragment : BaseFragment() {
                     CoroutineScope(Dispatchers.IO).launch {
                         viewmodel.getLogin(viewmodel.encodedUsername, viewmodel.encodedPassword,"Mobile")
                     }
+//                    lifecycleScope.launch(Dispatchers.IO) {
+//                        viewmodel.getLogin(viewmodel.encodedUsername, viewmodel.encodedPassword, "Mobile")
+//                    }
+
                 }
             }
             else{

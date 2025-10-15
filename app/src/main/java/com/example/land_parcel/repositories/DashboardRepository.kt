@@ -48,8 +48,6 @@ class DashboardRepository @Inject constructor(landDatabase: LandDatabase,@LandQu
                 _villageResponse.postValue(NetworkSealed.Data(villageDataDao.getAllVillages()))
          }
     }
-
-
     suspend fun getParcelReport(villageId: String?, khasraNumber: String,token :String): Result<ApiResponse> {
         return try {
             val response = apiService.getLandParcelReport(token,villageId, khasraNumber)

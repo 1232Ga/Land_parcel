@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserProfileFragment : BaseFragment(), View.OnClickListener {
-
     private lateinit var bindinguser: FragmentUserProfileBinding
     private val bindings get() = bindinguser
     @Inject
@@ -36,10 +35,7 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
     private val viewmodel: LogoutViewmodel by viewModels()
     @Inject
     lateinit var networkUtils: NetworkUtils
-
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         bindinguser = FragmentUserProfileBinding.inflate(inflater, container, false)
         val view = bindings.root
         getview()
@@ -60,7 +56,6 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
         })
         setobservers()
     }
-
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.surveyor_btn->{
@@ -91,7 +86,6 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
         dialog.setContentView(syncCheckDialogBinding.root)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
-
         syncCheckDialogBinding.btnSave.setOnClickListener {
              logoutApi(userId!!)
             dialog.dismiss()
@@ -125,4 +119,5 @@ class UserProfileFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+
 }
