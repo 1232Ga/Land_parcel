@@ -150,7 +150,7 @@
                             android:inputType="textEmailAddress"
                             android:paddingVertical="0dp"
                             android:singleLine="true"
-                            android:text="aditya.giri@garudauav.com"
+                            android:text=""
                             android:drawablePadding="5dp"
                             android:textColor="@color/text_color"
                             android:textSize="@dimen/_15sp" />
@@ -229,7 +229,7 @@
                         android:inputType="textPassword"
                         android:paddingVertical="0dp"
                         android:singleLine="true"
-                        android:text="Aditya@1234"
+                        android:text=""
                         android:drawablePadding="5dp"
                         android:textColor="@color/text_color"
                         android:textSize="@dimen/_15sp" />

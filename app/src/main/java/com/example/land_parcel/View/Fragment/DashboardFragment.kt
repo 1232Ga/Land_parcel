@@ -108,8 +108,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     private lateinit var bindingAnalytics: FragmentDashboardBinding
     private val bindings get() = bindingAnalytics
     private val viewmodel:DashboardViewModel by viewModels()
-   // private var previousVillageIds: MutableSet<String> = mutableSetOf()
-   // private val viewmodelpnil:MyViewModel by viewModels()
     @Inject
     lateinit var prefManager: PrefManager
     @Inject
@@ -239,7 +237,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         }
         else {
             viewmodel.maMap = mapboxMap
-
         }
         mapboxMap.addOnCameraIdleListener {
             viewmodel.mapState = mapboxMap.cameraPosition
@@ -267,9 +264,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         if (!villageId.isNullOrEmpty() && !khasraNumber.isNullOrEmpty()) {
             viewmodel.fetchParcelReportPeriodically(villageId, khasraNumber, token)
         }
-       // viewmodel.refreshVillageList(token,prefManager.getUserId()!!)
-        //startVillageListAutoRefresh()
-
     }
     private fun setMapStyleAndWMS(mapboxMap: MapboxMap, styleUrl: String) {
         setMapType(viewmodel.currentStyleIndex)
@@ -546,8 +540,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
     override fun onDestroyView() {
         super.onDestroyView()
     }
-
-
     override fun onPause() {
         super.onPause()
     }
@@ -1070,9 +1062,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             .position(LatLng(lat, lng))
         viewmodel.maMap?.addMarker(markerOptions)
     }
-
     @Deprecated("Deprecated in Java")
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
@@ -1083,7 +1073,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             }
         }
     }
-
     private fun setMapType(type: Int) {
         if (!networkUtils.isNetworkConnectionAvailable()) {
             val message = when (type) {
@@ -1115,7 +1104,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         }
         selectedText.setTextColor(ContextCompat.getColor(requireActivity(), R.color.primary_color))
     }
-
     private fun resetLayerVisibility() {
         viewmodel.isTileVisible = true// Toggle state
         bindings.parcelLayer.isChecked = true
@@ -1127,7 +1115,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         bindings.plotIdLayer.isChecked = true
         viewmodel.maMap?.style?.let { togglePlotId(it) }
     }
-
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.profile_view -> {
@@ -1251,7 +1238,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
         }
     }
-
     private fun fetchCurrentLocationotho(lati: Double, longi: Double) {
         bindings.mapView.getMapAsync { mapboxMap ->
             val latLng = LatLng(lati, longi)
@@ -1261,7 +1247,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                 .build()
         }
     }
-
     override fun onInternetConnected() {
        // showToast("Internet Connected")
        // viewmodel.maMap?.let { setMapStyleAndWMS(it, mapStyles[viewmodel.currentStyleIndex]) }
@@ -1271,7 +1256,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
             }
         }
     }
-
     override fun onInternetDisconnected() {
        // showToast("Internet disconnected")
     }
