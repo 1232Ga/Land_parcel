@@ -361,9 +361,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                     }
                     is NetworkSealed.Data -> {
                         bindings.swipeRefreshLayout.isRefreshing = false
-                        var villageList = it.data?.map { village ->
-                            VillageItem(village.VillageId, village.VillageName)
-                        } ?: emptyList()
+                        var villageList = it.data?.map { village -> VillageItem(village.VillageId, village.VillageName) } ?: emptyList()
                         villageList = villageList.asReversed()
                         if (villageList.isEmpty()) {
                             villageList = listOf(VillageItem("VillageId", "Select Village"))
@@ -378,6 +376,7 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
                                     val villname = villageList[i].villageName.replace(" ", "")
                                     val tempVillageId = "${villname}$villageIdWithoutHyphens"
                                     showShapefile(tempVillageId)
+                                    prefManager.setVillageIDWithoutHypen(villageIdWithoutHyphens)
                                     viewmodel.fetchChangesJson(WMTS_SOURCE_CHANGES_URL, tempVillageId, requireActivity())
                                     viewmodel.fetchGeoJson(WMTS_SOURCE_POLYGON_URL, tempVillageId, requireActivity())
                                     viewmodel.fetchBBOXJson(BBOX_LAYER, tempVillageId)
@@ -647,9 +646,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         updateSurveyBinding.plotNoNew.text = khasraNo
         updateSurveyBinding.ownersName.text = ownerName
 
-
-
-
         if (layers_type.equals("Polygon_layer")) {
 
             if (networkUtils.isNetworkConnectionAvailable()) {
@@ -689,7 +685,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
             }
         }
-
         updateSurveyBinding.viewBtn.setOnClickListener {
             findNavController().navigate(
                 R.id.action_dashboard_Fragment_to_updateFormFragment,
@@ -718,7 +713,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
         val reportlink = response.ReportURL
         val formattedDate = apiDate.let { convertIsoToNormalDate(it) } ?: "Date not available"
         val formattedDate1 = apiDate1.let { convertIsoToNormalDate(it) } ?: "Date not available"
-
 
         syncDialogBinding.khasraNo.setText(khasraNumbers.toString())
         syncDialogBinding.UlpinNo.setText(response.PnilNo)
@@ -884,7 +878,6 @@ class DashboardFragment : BaseFragment(), OnMapReadyCallback, View.OnClickListen
 
         }
     }
-
 
     private var downloadId: Long = 0
     private var progressDialogPercentage: ProgressDialog? = null

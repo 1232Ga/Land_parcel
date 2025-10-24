@@ -26,7 +26,8 @@ class ChangePasswordRepositories @Inject constructor(@LandQualifiers.UserRetrofi
             val result=apiService.changePassword("Bearer "+token,userid,changePasswordRequest)
             if(result.isSuccessful && result.code()==200 && result.body()!=null){
                 _chnagepassResponse.postValue(NetworkSealed.Data(result.body()))
-            }else{
+            }
+            else{
                 _chnagepassResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
             }
         }else{

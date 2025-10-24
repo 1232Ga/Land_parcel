@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.land_parcel.Utils.NetworkUtils
 import com.example.land_parcel.Utils.Utils
+import com.example.land_parcel.Utils.UtilsLogin
 import com.example.land_parcel.di.qualifiers.LandQualifiers
 import com.example.land_parcel.model.login.LoginRequest
 import com.example.land_parcel.model.login.LoginResponse
@@ -22,28 +23,11 @@ class LoginRepositories @Inject constructor(@LandQualifiers.BaseRetrofit private
             try {
                 _loginResponse.postValue(NetworkSealed.Loading())
                 val result=apiService.getLogin(loginRequest)
-                if(result.code()==200){
-                    if(result.isSuccessful && result.body()!=null){
-                        _loginResponse.postValue(NetworkSealed.Data(result.body()))
-                    }
-                }
-                else if(result.code()==401){
-                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
-                }
-                else if(result.code()==403){
-                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
-                }
-                else if(result.code()==404){
-                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
-                }
-                else if(result.code()==405){
-                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
-                }
-                else if(result.code()==500){
-                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                if(result.isSuccessful && result.code()==200 && result.body()!=null){
+                    _loginResponse.postValue(NetworkSealed.Data(result.body()))
                 }
                 else{
-                    _loginResponse.postValue(NetworkSealed.Error(null, Utils.parseErrorJson(result.errorBody())))
+                    _loginResponse.postValue(NetworkSealed.Error(null, UtilsLogin.parseErrorJson(result.errorBody())))
                 }
             }catch (e: Exception) {
                 _loginResponse.postValue(NetworkSealed.Error(null, e.message ?: "Unknown error"))

@@ -16,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <ImageView
         android:id="@+id/forestry_logo"
         android:layout_width="@dimen/_400dp"
@@ -52,7 +51,6 @@
         android:text="@string/details_to_continue"
         android:textAlignment="center"
         android:textColor="@color/white"
-
         android:textSize="@dimen/_15sp"
         app:layout_constraintTop_toBottomOf="@id/txt_welcome" />
 
@@ -150,7 +148,7 @@
                             android:inputType="textEmailAddress"
                             android:paddingVertical="0dp"
                             android:singleLine="true"
-                            android:text=""
+                            android:text="aditya.giri@garudauav.com"
                             android:drawablePadding="5dp"
                             android:textColor="@color/text_color"
                             android:textSize="@dimen/_15sp" />
@@ -229,7 +227,7 @@
                         android:inputType="textPassword"
                         android:paddingVertical="0dp"
                         android:singleLine="true"
-                        android:text=""
+                        android:text="Aditya@123"
                         android:drawablePadding="5dp"
                         android:textColor="@color/text_color"
                         android:textSize="@dimen/_15sp" />

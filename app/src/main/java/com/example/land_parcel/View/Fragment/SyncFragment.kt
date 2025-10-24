@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ import com.example.land_parcel.databinding.DialogSyncProgressBinding
 import com.example.land_parcel.databinding.DialogSyncSurveyBinding
 import com.example.land_parcel.databinding.FragmentSyncBinding
 import com.example.land_parcel.di.modules.RetrofitClient
+import com.example.land_parcel.di.modules.RetrofitClientCount
 import com.example.land_parcel.model.Pnil.MyViewModel
 import com.example.land_parcel.model.survey.SurveyData
 import com.example.land_parcel.network.NetworkSealed
@@ -202,6 +204,9 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                    withContext(Dispatchers.Main){
                        adapter.removeItem(position)
                        showToast("Data sync successfully !")
+
+                       callLayerCountApi(prefManager.getVillageIDWithoutHypen()!!,synItem.VillName)
+
                        println(prefManager.getreportintiate())
                        if(!synItem.fileName.isEmpty()){
                            if(prefManager.getreportintiate().equals("Not Generate")){
@@ -442,6 +447,24 @@ class SyncFragment : BaseFragment(), View.OnClickListener {
                 is NetworkSealed.Error->{
                     showToast(it.message)
                 }
+            }
+        }
+    }
+
+    private fun callLayerCountApi(villageId: String, villageName: String) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClientCount.instance.getLayerCount(villageId, villageName)
+                if (response.isSuccessful) {
+                    val apiResponse = response.body()
+                    apiResponse?.let {
+                        Log.d("API_SUCCESS", "Status: ${it.status}, Message: ${it.message}")
+                    }
+                } else {
+                    Log.e("API_ERROR", "Response Code: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("API_EXCEPTION", "Error: ${e.localizedMessage}")
             }
         }
     }

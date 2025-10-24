@@ -18,6 +18,7 @@ class PrefManager @Inject constructor(context: Context) {
         private const val GEO_JSON="geoJson"
         private const val PNIL_JSON="pnil"
         private const val VILLAGEIDHYPEN="villageIdhypen"
+        private const val VILLAGEIDWithoutHYPEN="villageIdwithouthypen"
         private const val REPORTINIATE="reportiniate"
 
     }
@@ -76,6 +77,12 @@ class PrefManager @Inject constructor(context: Context) {
     }
     fun setVillageIDHypen(VillageIDHypen: String?) {
         sharedPreferences.edit().putString(VILLAGEIDHYPEN, VillageIDHypen).apply()
+    }
+    fun getVillageIDWithoutHypen(): String? {
+        return sharedPreferences.getString(VILLAGEIDWithoutHYPEN, "")
+    }
+    fun setVillageIDWithoutHypen(VillageIDWithoutHypen: String?) {
+        sharedPreferences.edit().putString(VILLAGEIDWithoutHYPEN, VillageIDWithoutHypen).apply()
     }
 
     fun setPnil(pnil: String?) {

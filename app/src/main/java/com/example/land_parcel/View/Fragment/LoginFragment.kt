@@ -101,7 +101,8 @@ class LoginFragment : BaseFragment() {
                  }
                 is NetworkSealed.Error->{
                     binding.progressCircular.progressCircular.visibility = View.GONE
-                    updateDialog(it.message)
+                    val errorMessage = it.message ?: "Something went wrong"
+                    updateDialog(errorMessage)
                 }
             }
         }

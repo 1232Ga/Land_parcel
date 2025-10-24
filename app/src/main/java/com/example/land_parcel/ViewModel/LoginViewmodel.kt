@@ -22,8 +22,6 @@ class LoginViewmodel @Inject constructor(private val loginRepositories: LoginRep
                                          private val prefManager: PrefManager):ViewModel() {
 
     val loginResponse=loginRepositories.loginResponse
-
-
     private var deviceId: String = "123456789"
     var encodedPassword: String = ""
     var encodedUsername: String = ""
@@ -64,7 +62,6 @@ class LoginViewmodel @Inject constructor(private val loginRepositories: LoginRep
         val jsonString = gson.toJson(loginRequest)
         Log.d("DEBUG", "JSON = $jsonString")
         loginRepositories.login(loginRequest)
-
     }
 
 }
